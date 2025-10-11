@@ -54,6 +54,8 @@ class SiteController extends Controller
         ];
     }
 
+
+
     /**
      * Displays homepage.
      *
@@ -69,34 +71,31 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
-    public function actionLogin()
-    {
-        if (!Yii::$app->user->isGuest) {
+        public function actionLogin()
+        {
+            if (!Yii::$app->user->isGuest) return $this->goHome();
+
+            $model = new \yii\base\DynamicModel(['username','password']);
+            $model->addRule(['username','password'],'required');
+
+            if ($model->load(Yii::$app->request->post()) && $model->validate()){
+                $user = \app\models\User::findByUsername($model->username);
+                if ($user && $user->validatePassword($model->password)){
+                    Yii::$app->user->login($user);
+                    return $this->goHome();
+                }
+                Yii::$app->session->setFlash('error','Invalid credentials');
+            }
+
+            return $this->render('login',['model'=>$model]);
+        }
+
+        public function actionLogout()
+        {
+            Yii::$app->user->logout();
             return $this->goHome();
         }
 
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
-    public function actionLogout()
-    {
-        Yii::$app->user->logout();
-
-        return $this->goHome();
-    }
 
     /**
      * Displays contact page.

@@ -22,6 +22,7 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            'loginUrl' => ['site/login'],
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -42,14 +43,21 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
+        'cloudinary' => [
+        'class' => 'app\components\CloudinaryComponent',
+        ],
+        'as access' => [
+            'class' => \yii\filters\AccessControl::class,
+            'ruleConfig' => ['class' => \yii\filters\AccessRule::class],
+        ],
+        
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
+        
     ],
     'params' => $params,
 ];
