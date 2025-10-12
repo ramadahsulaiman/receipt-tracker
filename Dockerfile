@@ -65,3 +65,13 @@ EXPOSE 10000
 
 # Start both services
 CMD sh -c "php-fpm -D && nginx -g 'daemon off;'"
+
+# Debug: show PHP modules at startup (for free-tier log visibility)
+RUN echo "php -m" > /start.sh && \
+    echo "php -m" >> /start.sh && \
+    echo "php -i | grep 'PDO support'" >> /start.sh && \
+    echo "php -r \"echo 'Render PHP build ready.';\"" >> /start.sh && \
+    chmod +x /start.sh
+
+CMD ["sh", "-c", "php -m && php -r 'echo \"\\nRender container ready.\";' && php-fpm -D && nginx -g 'daemon off;'"]
+
