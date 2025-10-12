@@ -2,15 +2,16 @@
 FROM node:20-alpine AS assets
 WORKDIR /app
 
-# Install deps
+# Install deps for Tailwind + DaisyUI
 COPY package.json package-lock.json* ./
 RUN npm install
 
-# Bring in only what's needed to build CSS
+# Copy required Tailwind sources
 COPY tailwind.config.js postcss.config.js ./
 COPY web/css ./web/css
 COPY views ./views
-COPY vendor/yiisoft/yii2 ./vendor/yiisoft/yii2
+# COPY widgets ./widgets
+# COPY components ./components
 
 # Build CSS
 RUN npm run build
@@ -19,24 +20,24 @@ RUN npm run build
 FROM php:8.2-fpm-alpine AS php
 WORKDIR /var/www/html
 
-# PHP extensions (pdo_mysql for local, pdo_pgsql for Supabase)
+# Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql
 
-# Composer
+# Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
  && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
  && rm composer-setup.php
 
-# Copy app
+# Copy app source code
 COPY . .
 
 # Copy built CSS from assets stage
 COPY --from=assets /app/web/css/site.css /var/www/html/web/css/site.css
 
-# Install PHP deps (no dev for prod image)
+# Install PHP dependencies (no dev)
 RUN composer install --no-dev --prefer-dist --optimize-autoloader
 
-# Optional: set PHP limits for uploads (receipts)
+# PHP upload limits
 RUN { \
       echo "file_uploads=On"; \
       echo "memory_limit=256M"; \
@@ -49,19 +50,16 @@ RUN { \
 FROM nginx:alpine
 WORKDIR /var/www/html
 
-# Copy app and PHP-FPM runtime from previous stage
+# Copy app + PHP-FPM runtime
 COPY --from=php /var/www/html /var/www/html
 
-# Nginx config template + start script
+# Nginx template + start script
 COPY ./.render/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY ./.render/start.sh /start.sh
 RUN chmod +x /start.sh
 
-# Nginx expects static root
+# Render will inject $PORT; we use template substitution
 ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d
-
-# Expose (Render sets $PORT; we still expose 10000 for local test)
 EXPOSE 10000
 
-# Start: substitute $PORT into nginx template, run php-fpm + nginx
 CMD ["/bin/sh", "/start.sh"]
