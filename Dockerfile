@@ -10,10 +10,10 @@ RUN npm install
 COPY tailwind.config.js postcss.config.js ./
 COPY web/css ./web/css
 RUN npm run build
-# ⬆️ This will generate web/css/site.css using your Tailwind config
+# ⬆️ Generates web/css/site.css using your Tailwind config
 
 # ──────────────
-# 2️⃣ PHP runtime
+# 2️⃣ PHP runtime (build app + deps)
 # ──────────────
 FROM php:8.2-fpm-alpine AS php
 RUN apk add --no-cache \
@@ -23,6 +23,8 @@ RUN apk add --no-cache \
     libpq \
     postgresql-dev \
     mysql-dev
+
+# Install PHP extensions (PDO for MySQL & Postgres)
 RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql
 
 # Install Composer
@@ -30,25 +32,31 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /var/www/html
 
-# Copy your Yii2 app source
+# Copy Yii2 source
 COPY . .
 
-# Copy built Tailwind CSS from first stage
+# Copy built Tailwind CSS from the first stage
 COPY --from=assets /app/web/css/site.css /var/www/html/web/css/site.css
 
-# Install PHP dependencies (this downloads Yii2 etc.)
+# Install PHP dependencies (Yii2 etc.)
 RUN composer install --no-dev --optimize-autoloader
-# 🔧 If your composer.json is in a subfolder (e.g., /src), update path accordingly
 
 # ──────────────
-# 3️⃣ Nginx runtime
+# 3️⃣ Final runtime (PHP + Nginx together)
 # ──────────────
-FROM nginx:alpine
+FROM php:8.2-fpm-alpine
+
+# Install Nginx
+RUN apk add --no-cache nginx
+
+# Copy app built in PHP stage
 COPY --from=php /var/www/html /var/www/html
+
+# Copy Nginx config
 COPY ./.render/nginx.conf /etc/nginx/conf.d/default.conf
-# 🔧 Make sure you have this nginx.conf inside a folder named `.render`
 
 WORKDIR /var/www/html
 EXPOSE 10000
 
-CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
+# Start PHP-FPM and Nginx
+CMD sh -c "php-fpm -D && nginx -g 'daemon off;'"
