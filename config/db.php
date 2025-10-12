@@ -6,7 +6,7 @@ if ($driver === 'pgsql') {
     // Supabase (Postgres)
     return [
         'class' => 'yii\db\Connection',
-        'dsn' => "pgsql:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_DATABASE']}",
+        'dsn' => "pgsql:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_DATABASE']};sslmode=require",
         'username' => $_ENV['DB_USERNAME'],
         'password' => $_ENV['DB_PASSWORD'] ?? NULL,
         'charset' => 'utf8',
