@@ -52,11 +52,12 @@ RUN apk add --no-cache nginx
 # Copy app built in PHP stage
 COPY --from=php /var/www/html /var/www/html
 
-# Copy Nginx config
-COPY ./.render/nginx.conf /etc/nginx/conf.d/default.conf
+# Remove default nginx configs and add our own
+RUN rm -rf /etc/nginx/http.d/* /etc/nginx/conf.d/*
+COPY ./.render/nginx.conf /etc/nginx/http.d/default.conf
 
 WORKDIR /var/www/html
 EXPOSE 10000
 
-# Start PHP-FPM and Nginx
+# Start both services
 CMD sh -c "php-fpm -D && nginx -g 'daemon off;'"
