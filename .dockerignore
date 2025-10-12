@@ -1,0 +1,7 @@
+/vendor
+/node_modules
+/runtime
+/.git
+/.idea
+/.vscode
+/web/assets
