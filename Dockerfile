@@ -1,6 +1,9 @@
 # ---------- ASSETS BUILD (Tailwind) ----------
 FROM node:20-alpine AS assets
-WORKDIR /app
+WORKDIR /var/www/html
+
+# Install envsubst (from gettext)
+RUN apk add --no-cache gettext
 
 # Install deps for Tailwind + DaisyUI
 COPY package.json package-lock.json* ./
@@ -61,6 +64,7 @@ WORKDIR /var/www/html
 COPY --from=php /var/www/html /var/www/html
 
 # Copy nginx + startup config
+COPY --from=php /var/www/html /var/www/html
 COPY ./.render/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY ./.render/start.sh /start.sh
 RUN chmod +x /start.sh
