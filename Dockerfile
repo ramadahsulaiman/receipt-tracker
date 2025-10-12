@@ -56,6 +56,10 @@ COPY --from=php /var/www/html /var/www/html
 RUN rm -rf /etc/nginx/http.d/* /etc/nginx/conf.d/*
 COPY ./.render/nginx.conf /etc/nginx/http.d/default.conf
 
+# Ensure runtime and assets folders exist and writable
+RUN mkdir -p /var/www/html/runtime /var/www/html/web/assets \
+    && chmod -R 777 /var/www/html/runtime /var/www/html/web/asset
+
 WORKDIR /var/www/html
 EXPOSE 10000
 
