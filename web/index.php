@@ -35,4 +35,4 @@ $app->on(Application::EVENT_BEFORE_REQUEST, function () {
 
 // Run the app
 $app->run();
-(new yii\web\Application($config))->run();
+// (new yii\web\Application($config))->run();
