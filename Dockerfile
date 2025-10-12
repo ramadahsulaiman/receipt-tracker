@@ -48,20 +48,25 @@ RUN { \
       echo "max_execution_time=120"; \
    } > /usr/local/etc/php/conf.d/uploads.ini
 
-# ---------- NGINX RUNTIME ----------
-FROM nginx:alpine
+# ---------- FINAL IMAGE (Nginx + PHP-FPM in one container) ----------
+FROM php:8.2-fpm-alpine
+
+# Install Nginx + PostgreSQL dev libs
+RUN apk add --no-cache nginx supervisor postgresql-dev
+
+# Setup working directory
 WORKDIR /var/www/html
 
-# Copy app + PHP-FPM runtime
+# Copy app from PHP stage
 COPY --from=php /var/www/html /var/www/html
 
-# Nginx template + start script
+# Copy nginx + startup config
 COPY ./.render/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY ./.render/start.sh /start.sh
 RUN chmod +x /start.sh
 
-# Render will inject $PORT; we use template substitution
-ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d
+# Expose Render port
 EXPOSE 10000
 
+# Start both services (Nginx + PHP-FPM)
 CMD ["/bin/sh", "/start.sh"]
