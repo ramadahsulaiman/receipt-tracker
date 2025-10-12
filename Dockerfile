@@ -21,8 +21,10 @@ FROM php:8.2-fpm-alpine AS php
 WORKDIR /var/www/html
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql
-
+# RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql
+RUN apk add --no-cache postgresql-dev \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql
+    
 # Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
  && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
