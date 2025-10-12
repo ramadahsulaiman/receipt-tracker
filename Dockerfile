@@ -1,57 +1,48 @@
-# ---------- ASSETS BUILD (Tailwind) ----------
+# ──────────────
+# 1️⃣ Build Tailwind assets
+# ──────────────
 FROM node:20-alpine AS assets
 WORKDIR /app
 
-# Install deps
-COPY package.json package-lock.json* ./
+COPY package*.json ./
 RUN npm install
 
-# Copy Tailwind configs
 COPY tailwind.config.js postcss.config.js ./
-
-# Copy source files (make sure folder exists)
-RUN mkdir -p web/css
 COPY web/css ./web/css
-COPY views ./views
+RUN npm run build
+# ⬆️ This will generate web/css/site.css using your Tailwind config
 
-# Optional — only if Yii2 vendor widgets are needed for Tailwind scanning
-RUN mkdir -p vendor/yiisoft/yii2
-COPY vendor/yiisoft/yii2 ./vendor/yiisoft/yii2
-
-# Build CSS (this creates /app/web/css/site.css)
-RUN npm run build || (echo "Tailwind build failed" && exit 1)
-
-# Verify output exists (for debugging)
-RUN ls -l web/css
-
-# ---------- PHP-FPM ----------
+# ──────────────
+# 2️⃣ PHP runtime
+# ──────────────
 FROM php:8.2-fpm-alpine AS php
+RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql
+RUN apk add --no-cache curl git unzip libpq
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 WORKDIR /var/www/html
 
-RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer && rm composer-setup.php
-
+# Copy your Yii2 app source
 COPY . .
 
-# Copy compiled CSS from assets stage
+# Copy built Tailwind CSS from first stage
 COPY --from=assets /app/web/css/site.css /var/www/html/web/css/site.css
 
+# Install PHP dependencies (this downloads Yii2 etc.)
 RUN composer install --no-dev --optimize-autoloader
+# 🔧 If your composer.json is in a subfolder (e.g., /src), update path accordingly
 
-# ---------- NGINX ----------
+# ──────────────
+# 3️⃣ Nginx runtime
+# ──────────────
 FROM nginx:alpine
-WORKDIR /var/www/html
-
-# Add envsubst
-RUN apk add --no-cache gettext
-
-# Copy files
 COPY --from=php /var/www/html /var/www/html
-COPY ./.render/nginx.conf.template /etc/nginx/templates/default.conf.template
-COPY ./.render/start.sh /start.sh
-RUN chmod +x /start.sh
+COPY ./.render/nginx.conf /etc/nginx/conf.d/default.conf
+# 🔧 Make sure you have this nginx.conf inside a folder named `.render`
 
+WORKDIR /var/www/html
 EXPOSE 10000
 
-CMD ["/bin/sh", "/start.sh"]
+CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
