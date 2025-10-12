@@ -58,7 +58,7 @@ COPY ./.render/nginx.conf /etc/nginx/http.d/default.conf
 
 # Ensure runtime and assets folders exist and writable
 RUN mkdir -p /var/www/html/runtime /var/www/html/web/assets \
-    && chmod -R 777 /var/www/html/runtime /var/www/html/web/asset
+    && chmod -R 777 /var/www/html/runtime /var/www/html/web/assets
 
 WORKDIR /var/www/html
 EXPOSE 10000
