@@ -21,8 +21,12 @@ $config = [
         ],
         'user' => [
             'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
-            'loginUrl' => ['site/login'],
+            //since render hosting not support login
+            // 'enableAutoLogin' => true,
+            // 'loginUrl' => ['site/login'],
+            'enableAutoLogin' => false,
+            'loginUrl' => null,
+
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',

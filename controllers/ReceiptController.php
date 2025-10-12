@@ -4,7 +4,7 @@ namespace app\controllers;
 use Yii;
 use app\models\Category;
 use app\models\Receipt;
-use yii\filters\AccessControl;
+// use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
@@ -14,13 +14,13 @@ class ReceiptController extends Controller
     public function behaviors()
     {
         return [
-          'access' => [
-            'class' => AccessControl::class,
-            'only' => ['index','create','update','delete','view'],
-            'rules' => [
-              ['allow'=>true,'roles'=>['@']],
-            ],
-          ],
+        //   'access' => [
+        //     'class' => AccessControl::class,
+        //     'only' => ['index','create','update','delete','view'],
+        //     'rules' => [
+        //       ['allow'=>true,'roles'=>['@']],
+        //     ],
+        //   ],
         ];
     }
 

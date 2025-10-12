@@ -3,7 +3,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Category;
-use yii\filters\AccessControl;
+// use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -12,13 +12,13 @@ class CategoryController extends Controller
     public function behaviors()
     {
         return [
-          'access' => [
-            'class' => AccessControl::class,
-            'only' => ['index','create','update','delete'],
-            'rules' => [
-              ['allow'=>true,'roles'=>['@']],
-            ],
-          ],
+        //   'access' => [
+        //     'class' => AccessControl::class,
+        //     'only' => ['index','create','update','delete'],
+        //     'rules' => [
+        //       ['allow'=>true,'roles'=>['@']],
+        //     ],
+        //   ],
         ];
     }
 
