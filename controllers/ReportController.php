@@ -3,7 +3,7 @@ namespace app\controllers;
 
 use Yii;
 use yii\web\Controller;
-// use yii\filters\AccessControl;
+use yii\filters\AccessControl;
 use app\models\Receipt;
 use app\models\Category;
 
@@ -12,13 +12,13 @@ class ReportController extends Controller
     public function behaviors()
     {
         return [
-        //   'access' => [
-        //     'class' => AccessControl::class,
-        //     'only' => ['index'],
-        //     'rules' => [
-        //       ['allow'=>true,'roles'=>['@']],
-        //     ],
-        //   ],
+          'access' => [
+            'class' => AccessControl::class,
+            'only' => ['index'],
+            'rules' => [
+              ['allow'=>true,'roles'=>['@']],
+            ],
+          ],
         ];
     }
 

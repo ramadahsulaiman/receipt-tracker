@@ -3,7 +3,7 @@
 namespace app\controllers;
 
 use Yii;
-// use yii\filters\AccessControl;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
@@ -18,23 +18,23 @@ class SiteController extends Controller
     public function behaviors()
     {
         return [
-            // 'access' => [
-            //     'class' => AccessControl::class,
-            //     'only' => ['logout'],
-            //     'rules' => [
-            //         [
-            //             'actions' => ['logout'],
-            //             'allow' => true,
-            //             'roles' => ['@'],
-            //         ],
-            //     ],
-            // ],
-            // 'verbs' => [
-            //     'class' => VerbFilter::class,
-            //     'actions' => [
-            //         'logout' => ['post'],
-            //     ],
-            // ],
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['logout'],
+                'rules' => [
+                    [
+                        'actions' => ['logout'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'logout' => ['post'],
+                ],
+            ],
         ];
     }
 
@@ -54,6 +54,12 @@ class SiteController extends Controller
         ];
     }
 
+    // Custom landing page action
+    public function actionLanding()
+    {
+        $this->layout = 'main'; // or a custom layout if you prefer
+        return $this->render('landing');
+    }
 
 
     /**
@@ -73,22 +79,22 @@ class SiteController extends Controller
      */
         public function actionLogin()
         {
-            if (!Yii::$app->user->isGuest) return $this->goHome();
-
-            $model = new \yii\base\DynamicModel(['username','password']);
-            $model->addRule(['username','password'],'required');
-
-            if ($model->load(Yii::$app->request->post()) && $model->validate()){
-                $user = \app\models\User::findByUsername($model->username);
-                if ($user && $user->validatePassword($model->password)){
-                    Yii::$app->user->login($user);
-                    return $this->goHome();
-                }
-                Yii::$app->session->setFlash('error','Invalid credentials');
+            if (!Yii::$app->user->isGuest) {
+                return $this->goHome();
             }
 
-            return $this->render('login',['model'=>$model]);
+            $model = new \app\models\LoginForm();
+
+            if ($model->load(Yii::$app->request->post()) && $model->login()) {
+                return $this->goBack(); // ✅ redirect ke halaman asal (atau index)
+            }
+
+            $model->password = ''; // kosongkan semula password field
+            return $this->render('login', [
+                'model' => $model,
+            ]);
         }
+
 
         public function actionLogout()
         {

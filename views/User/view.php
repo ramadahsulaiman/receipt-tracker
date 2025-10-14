@@ -4,14 +4,14 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
-/** @var app\models\Receipt $model */
+/** @var app\models\User $model */
 
 $this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Receipts', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="receipt-view">
+<div class="user-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -30,15 +30,21 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'user_id',
-            'category_id',
-            'amount',
-            'currency',
-            'spent_at',
-            'vendor',
-            'notes:ntext',
-            'cloud_public_id',
-            'cloud_url:url',
+            'username',
+            'password_hash',
+            'auth_key',
+            'full_name',
+            'ic_number',
+            'tax_number',
+            'email:email',
+            'phone_number',
+            'address:ntext',
+            'marital_status',
+            'dependents',
+            'employer_name',
+            'employer_number',
+            'bank_name',
+            'bank_account',
             'created_at',
             'updated_at',
         ],
