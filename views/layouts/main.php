@@ -24,26 +24,38 @@ AppAsset::register($this);
         plugins: [],
       }
     </script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
-
-    <title><?= Html::encode($this->title) ?></title>
-    <?php $this->head() ?>
+    <link href="<?= Yii::getAlias('@web/css/output.css') ?>" rel="stylesheet">
 </head>
+
 <body class="min-h-screen bg-base-200">
 <?php $this->beginBody() ?>
 
-<header class="navbar bg-base-100 shadow">
-  <div class="container mx-auto flex justify-between">
-    <a href="<?= Url::to(['/']) ?>" class="btn btn-ghost text-xl">Receipt Tracker</a>
-    <nav class="flex gap-2">
-      <a class="btn btn-ghost" href="<?= Url::to(['/receipt/index']) ?>">Receipts</a>
-      <a class="btn btn-ghost" href="<?= Url::to(['/category/index']) ?>">Categories</a>
-      <a class="btn btn-primary" href="<?= Url::to(['/report/index']) ?>">Reports</a>
-    </nav>
+<!-- Optional Navbar -->
+<header class="navbar bg-base-100 shadow-md sticky top-0 z-50">
+  <div class="container mx-auto flex justify-between items-center">
+    <a href="<?= Url::to(['/site/landing']) ?>" class="btn btn-ghost normal-case text-xl font-bold">
+      Receipt Tracker
+    </a>
+
+    <?php if (Yii::$app->user->isGuest): ?>
+      <nav class="flex gap-2">
+        <a href="<?= Url::to(['/site/login']) ?>" class="btn btn-ghost">Login</a>
+        <a href="<?= Url::to(['/user/create']) ?>" class="btn btn-primary">Sign Up</a>
+      </nav>
+    <?php else: ?>
+      <nav class="flex items-center gap-2">
+        <a href="<?= Url::to(['/receipt/index']) ?>" class="btn btn-ghost">Receipts</a>
+        <a href="<?= Url::to(['/category/index']) ?>" class="btn btn-ghost">Categories</a>
+        <a href="<?= Url::to(['/report/index']) ?>" class="btn btn-ghost">Reports</a>
+        <form action="<?= Url::to(['/site/logout']) ?>" method="post">
+          <?= Html::submitButton('Logout', ['class' => 'btn btn-error btn-sm text-white']) ?>
+        </form>
+      </nav>
+    <?php endif; ?>
   </div>
 </header>
 
-<main class="container mx-auto p-4">
+<main class="container mx-auto p-6 flex-grow">
   <?= $content ?>
 </main>
 

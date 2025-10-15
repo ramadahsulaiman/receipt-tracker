@@ -43,6 +43,7 @@ class User extends ActiveRecord implements IdentityInterface
     const MARITAL_STATUS_DIVORCED = 'divorced';
     const MARITAL_STATUS_WIDOWED = 'widowed';
 
+    public $password; // For password input (not stored in DB)
     /**
      * {@inheritdoc}
      */
@@ -60,8 +61,8 @@ class User extends ActiveRecord implements IdentityInterface
             [['auth_key', 'ic_number', 'tax_number', 'phone_number', 'address', 'employer_name', 'employer_number', 'bank_name', 'bank_account'], 'default', 'value' => null],
             [['marital_status'], 'default', 'value' => 'single'],
             [['dependents'], 'default', 'value' => 0],
-            [['username', 'password_hash', 'full_name', 'email'], 'required'],
-            [['address', 'marital_status'], 'string'],
+            [['username','password', 'password_hash', 'full_name', 'email'], 'required'],
+            [['address', 'marital_status','password'], 'string'],
             [['dependents'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['username', 'password_hash', 'full_name', 'email', 'employer_name'], 'string', 'max' => 255],

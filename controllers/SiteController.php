@@ -57,10 +57,9 @@ class SiteController extends Controller
     // Custom landing page action
     public function actionLanding()
     {
-        $this->layout = 'main'; // or a custom layout if you prefer
+        $this->layout = 'blank';
         return $this->render('landing');
     }
-
 
     /**
      * Displays homepage.

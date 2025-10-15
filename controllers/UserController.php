@@ -1,7 +1,7 @@
 <?php
 
 namespace app\controllers;
-
+use Yii;
 use app\models\User;
 use app\models\UserSearch;
 use yii\web\Controller;
@@ -67,20 +67,26 @@ class UserController extends Controller
      */
     public function actionCreate()
     {
-        $model = new User();
+        $model = new \app\models\User();
+        $this->layout = 'blank';
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            // Hash password + generate auth key
+            $model->setPassword($model->password);
+            $model->generateAuthKey();
+
+            if ($model->save()) {
+                // Optional: auto-login after signup
+                Yii::$app->user->login($model);
+                return $this->redirect(['site/index']);
             }
-        } else {
-            $model->loadDefaultValues();
         }
 
         return $this->render('create', [
             'model' => $model,
         ]);
     }
+
 
     /**
      * Updates an existing User model.
