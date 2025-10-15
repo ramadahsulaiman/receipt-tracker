@@ -67,7 +67,7 @@ class UserController extends Controller
      */
     public function actionCreate()
     {
-        $model = new \app\models\User();
+        $model = new User();
         $this->layout = 'blank';
 
         if ($model->load(Yii::$app->request->post())) {

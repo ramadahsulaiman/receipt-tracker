@@ -32,7 +32,7 @@ class SiteController extends Controller
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                    'logout' => ['post'],
+                    'logout' => ['post', 'get'], // allow GET for logout to support navbar link
                 ],
             ],
         ];
@@ -58,7 +58,10 @@ class SiteController extends Controller
     public function actionLanding()
     {
         $this->layout = 'blank';
-        return $this->render('landing');
+        $user = Yii::$app->user->identity;
+        return $this->render('landing',[
+            'user' => $user,
+        ]);
     }
 
     /**
@@ -68,8 +71,17 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $user = null;
+
+        if (!Yii::$app->user->isGuest) {
+            $user = Yii::$app->user->identity;
+        }
+
+        return $this->render('index', [
+            'user' => $user,
+        ]);
     }
+
 
     /**
      * Login action.
@@ -78,14 +90,15 @@ class SiteController extends Controller
      */
         public function actionLogin()
         {
+            $this->layout = 'blank';
             if (!Yii::$app->user->isGuest) {
                 return $this->goHome();
             }
 
-            $model = new \app\models\LoginForm();
+            $model = new LoginForm();
 
             if ($model->load(Yii::$app->request->post()) && $model->login()) {
-                return $this->goBack(); // ✅ redirect ke halaman asal (atau index)
+                return $this-> redirect(['site/index']); // redirect ke halaman asal (atau index)
             }
 
             $model->password = ''; // kosongkan semula password field

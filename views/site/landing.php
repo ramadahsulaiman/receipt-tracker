@@ -1,4 +1,5 @@
 <?php
+use yii\helpers\Html;
 use yii\helpers\Url;
 $this->title = 'Receipt Tracker - Simple by Mada :)';
 ?>
@@ -18,11 +19,37 @@ $this->title = 'Receipt Tracker - Simple by Mada :)';
       <span class="text-lg font-semibold tracking-tight">By Ramadah S.</span>
     </div>
 
-    <div class="flex items-center gap-3">
-      <a href="<?= Url::to(['site/login']) ?>" class="btn btn-ghost text-white normal-case">Login</a>
-      <a href="<?= Url::to(['user/create']) ?>" class="btn btn-primary normal-case">Sign Up</a>
-      <!-- If you don’t have user/create yet, point to site/register or a placeholder -->
-    </div>
+    <!-- existing button for login / signup -->
+    <!-- <div class="flex items-center gap-3">
+      <a href="</?= Url::to(['site/login']) ?>" class="btn btn-ghost text-white normal-case">Login</a>
+      <a href="</?= Url::to(['user/create']) ?>" class="btn btn-primary normal-case">Sign Up</a>
+    </div> -->
+    <?php if (Yii::$app->user->isGuest): ?>
+        <div class="flex space-x-3">
+            <a href="<?= Url::to(['site/login']) ?>" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                Login
+            </a>
+            <a href="<?= Url::to(['site/signup']) ?>" 
+              class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
+                Sign Up
+            </a>
+        </div>
+    <?php else: ?>
+        <div class="flex space-x-3">
+            <span class="text-lg text-base-content text-white">
+                Welcome,
+              <a href="<?= Url::to(['site/index']) ?>" class="link link-hover">
+                Yo! <strong><?= Html::encode($user->username ?? $user->name ?? 'User') ?></strong>
+              </a>
+            </span>
+            <a href="<?= Url::to(['site/logout']) ?>" 
+              data-method="post"
+              class="btn btn-error btn-sm normal-case">
+                Logout
+            </a>
+        </div>
+    <?php endif; ?>
   </nav>
 
   <!-- Hero Content -->
@@ -56,11 +83,11 @@ $this->title = 'Receipt Tracker - Simple by Mada :)';
             <div class="card-body">
               <h2 class="card-title">Quick Add</h2>
               <div class="grid grid-cols-2 gap-3">
-                <div class="form-control">
+                <div class="form-control text-base-content">
                   <label class="label"><span class="label-text">Amount (RM)</span></label>
                   <input type="text" class="input input-bordered" value="128.90" />
                 </div>
-                <div class="form-control">
+                <div class="form-control text-base-content">
                   <label class="label"><span class="label-text">Category</span></label>
                   <select class="select select-bordered">
                     <option>Groceries</option>
@@ -70,7 +97,7 @@ $this->title = 'Receipt Tracker - Simple by Mada :)';
                   </select>
                 </div>
               </div>
-              <div class="form-control mt-3">
+              <div class="form-control mt-3 text-base-content">
                 <label class="label"><span class="label-text">Note</span></label>
                 <input type="text" class="input input-bordered" placeholder="e.g. Guardian — Vitamins" />
               </div>
