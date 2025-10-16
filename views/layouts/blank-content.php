@@ -33,6 +33,11 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
       #sidebar {
         transition: transform 0.3s ease-in-out;
       }
+      .menu li a i,
+      .menu li summary i {
+        margin-right: 0.5rem;
+      }
+
     </style>
 
     <?php $this->head() ?>
@@ -45,142 +50,115 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
 <div id="overlay" 
      class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden opacity-0 md:hidden"></div>
 
-<!-- ✅ Sidebar -->
+<!-- ✅ Sidebar Wrapper -->
 <aside id="sidebar"
-  class="fixed inset-y-0 left-0 w-64 bg-base-100 border-r border-base-300 flex flex-col shadow-xl z-40 
-         -translate-x-full md:translate-x-0 md:shadow-none md:border-none">
-  <div class="flex items-center justify-between p-4 border-b border-base-300">
-    <button class="btn btn-xs btn-ghost md:hidden" onclick="toggleSidebar()">
-      <i class="fa-solid fa-xmark text-base-content"></i>
+  class="fixed inset-y-0 left-0 z-50 flex items-center justify-center
+         transition-transform duration-300 ease-in-out
+         -translate-x-full md:translate-x-0">
+
+  <!-- ✅ Sidebar Panel -->
+  <div class="relative w-64 h-[80vh] bg-base-100/95 backdrop-blur-xl border border-base-300/70
+              rounded-2xl shadow-2xl flex flex-col justify-between overflow-hidden pointer-events-auto">
+
+    <!-- Floating Close Button (only visible on mobile) -->
+    <button class="absolute -top-3 -right-3 btn btn-xs btn-circle btn-error text-white shadow-lg md:hidden"
+            onclick="toggleSidebar()">
+      <i class="fa-solid fa-xmark"></i>
     </button>
-  </div>
 
-<nav class="flex-1 overflow-y-auto p-4">
-  <ul class="menu menu-md">
-    <!-- Profile -->
-    <li>
-      <details open>
-        <summary>
-          <i class="fa-solid fa-user-gear w-5 text-base-content"></i>
-          <span>Profile</span>
-        </summary>
-        <ul>
-          <li>
-            <a href="#">
-              <i class="fa-solid fa-id-card w-4 text-base-content/70"></i>
-              My Profile
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class="fa-solid fa-user-pen w-4 text-base-content/70"></i>
-              Setting My Profile
-            </a>
-          </li>
-        </ul>
-      </details>
-    </li>
+    <!-- Sidebar Menu -->
+    <nav class="flex-1 overflow-y-auto p-4">
+      <ul class="menu menu-md">
+        <li>
+          <details open>
+            <summary>
+              <i class="fa-solid fa-user-gear w-5 text-base-content/"></i>
+              <span>Profile</span>
+            </summary>
+            <ul>
+              <li><a href="#"><i class="fa-solid fa-id-card w-4 text-base-content/70"></i> My Profile</a></li>
+              <li><a href="#"><i class="fa-solid fa-user-pen w-4 text-base-content/70"></i> Setting My Profile</a></li>
+            </ul>
+          </details>
+        </li>
 
-    <!-- Receipt -->
-    <li>
-      <details>
-        <summary>
-          <i class="fa-solid fa-receipt w-5 text-base-content"></i>
-          <span>Receipt</span>
-        </summary>
-        <ul>
-          <li>
-            <a href="#">
-              <i class="fa-solid fa-plus w-4 text-base-content/70"></i>
-              My New Receipt
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class="fa-solid fa-magnifying-glass-dollar w-4 text-base-content/70"></i>
-              Track Receipt
-            </a>
-          </li>
-        </ul>
-      </details>
-    </li>
+        <li>
+          <details>
+            <summary>
+              <i class="fa-solid fa-receipt w-5 text-base-content/"></i>
+              <span>Receipt</span>
+            </summary>
+            <ul>
+              <li><a href="#"><i class="fa-solid fa-plus w-4 text-base-content/70"></i> My New Receipt</a></li>
+              <li><a href="#"><i class="fa-solid fa-magnifying-glass-dollar w-4 text-base-content/70"></i> Track Receipt</a></li>
+            </ul>
+          </details>
+        </li>
 
-    <!-- Category -->
-    <li>
-      <details>
-        <summary>
-          <i class="fa-solid fa-tags w-5 text-base-content"></i>
-          <span>Category</span>
-        </summary>
-        <ul>
-          <li>
-            <a href="#">
-              <i class="fa-solid fa-folder-tree w-4 text-base-content/70"></i>
-              Set the Category
-            </a>
-          </li>
-        </ul>
-      </details>
-    </li>
+        <li>
+          <details>
+            <summary>
+              <i class="fa-solid fa-tags w-5 text-base-content/"></i>
+              <span>Category</span>
+            </summary>
+            <ul>
+              <li><a href="#"><i class="fa-solid fa-folder-tree w-4 text-base-content/70"></i> Set the Category</a></li>
+            </ul>
+          </details>
+        </li>
 
-    <!-- Report -->
-    <li>
-      <details>
-        <summary>
-          <i class="fa-solid fa-chart-column w-5 text-base-content"></i>
-          <span>Report</span>
-        </summary>
-        <ul>
-          <li>
-            <a href="#">
-              <i class="fa-solid fa-file-export w-4 text-base-content/70"></i>
-              Generate Report
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class="fa-solid fa-list-check w-4 text-base-content/70"></i>
-              List of My Report
-            </a>
-          </li>
-        </ul>
-      </details>
-    </li>
-  </ul>
-</nav>
+        <li>
+          <details>
+            <summary>
+              <i class="fa-solid fa-chart-column w-5 text-base-content/"></i>
+              <span>Report</span>
+            </summary>
+            <ul>
+              <li><a href="#"><i class="fa-solid fa-file-export w-4 text-base-content/70"></i> Generate Report</a></li>
+              <li><a href="#"><i class="fa-solid fa-list-check w-4 text-base-content/70"></i> List of My Report</a></li>
+            </ul>
+          </details>
+        </li>
+      </ul>
+    </nav>
 
 
-  <div class="p-3 border-t border-base-300 text-xs text-center text-base-content/70">
-    © <?= date('Y') ?> Receipt Tracker
-  </div>
 </aside>
+
+
+
 
 <!-- ✅ Main Content -->
 <div class="flex flex-col md:ml-64 transition-all">
 
   <!-- Navbar -->
-  <nav class="navbar bg-base-100 border-b border-base-300 shadow-sm px-6 py-3 flex justify-between items-center">
-    <div class="flex items-center gap-2">
-      <button class="btn btn-sm btn-ghost text-base-content hover:bg-base-200 md:hidden" onclick="toggleSidebar()">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-      <h2 class="text-lg font-semibold text-base-content">
-        <?= Html::encode($this->title) ?>
-      </h2>
-    </div>
+<!-- ✅ Full-width Navbar -->
+<nav class="fixed top-0 left-0 right-0 
+            bg-base-100 border-b border-base-300 shadow-sm
+            flex justify-between items-center 
+            px-6 py-3 z-40">
+  <div class="flex items-center gap-2">
+    <button class="btn btn-sm btn-ghost text-base-content hover:bg-base-200 md:hidden" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h2 class="text-lg font-semibold text-base-content">
+      <?= Html::encode($this->title) ?>
+    </h2>
+  </div>
 
-    <div class="flex items-center gap-3 text-sm">
-      <span class="hidden sm:inline text-base-content/80">
-        Hai, <span class="text-base-content font-semibold"><?= Html::encode($username) ?></span>
-      </span>
-      <a href="<?= Url::to(['site/logout']) ?>"
-         data-method="post"
-         class="btn btn-sm gap-1 btn-base-content">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        Logout
-      </a>
-    </div>
-  </nav>
+  <div class="flex items-center gap-3 text-sm">
+    <span class="hidden sm:inline text-base-content/80">
+      Hai, <span class="text-base-content font-semibold"><?= Html::encode($username) ?></span>
+    </span>
+    <a href="<?= Url::to(['site/logout']) ?>"
+       data-method="post"
+       class="btn btn-sm btn-default gap-1 text-base-content hover:text-glow hover: shadow-lg ">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      Logout
+    </a>
+  </div>
+</nav>
+
 
   <!-- Page Content -->
   <main class="flex-1 p-6">
@@ -226,7 +204,7 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
     }
   }
 
-  overlay.addEventListener("click", toggleSidebar);
+  if (overlay)overlay.addEventListener("click", toggleSidebar);
 
   function setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
