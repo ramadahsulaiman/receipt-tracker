@@ -18,6 +18,8 @@ AppAsset::register($this);
     
     <!-- Tailwind + DaisyUI (CDN for dev) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+
     <script>
       tailwind.config = {
         theme: { extend: {} },
@@ -25,6 +27,11 @@ AppAsset::register($this);
       }
     </script>
     <link href="<?= Yii::getAlias('@web/css/output.css') ?>" rel="stylesheet">
+    <!-- Font Awesome (for icons) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+        
 </head>
 
 <body class="min-h-screen bg-base-200">

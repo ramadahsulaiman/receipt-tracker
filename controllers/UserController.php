@@ -77,8 +77,8 @@ class UserController extends Controller
 
             if ($model->save()) {
                 // Optional: auto-login after signup
-                Yii::$app->user->login($model);
-                return $this->redirect(['site/index']);
+                Yii::$app->session->setFlash('showSuccessToast', true);
+                return $this->redirect(['user/create']);
             }
         }
 
