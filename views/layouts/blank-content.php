@@ -1,134 +1,240 @@
 <?php
-use app\assets\AppAsset;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-AppAsset::register($this);
-$this->beginPage();
+app\assets\AppAsset::register($this);
+$username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->username;
 ?>
+
+<?php $this->beginPage() ?>
 <!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>" data-theme="light">
+<html lang="<?= Yii::$app->language ?>" data-theme="cupcake">
 <head>
-  <meta charset="<?= Yii::$app->charset ?>">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= Html::encode($this->title) ?></title>
+    <meta charset="<?= Yii::$app->charset ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><?= Html::encode($this->title) ?></title>
 
-  <!-- TailwindCSS + DaisyUI -->
-  <script src="https://cdn.tailwindcss.com"></script>
-    <link
-        href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
-        rel="stylesheet"
-        type="text/css"
-    />
-  <!-- Font Awesome -->
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- ✅ 1. Set theme early -->
+    <script>
+      const savedTheme = localStorage.getItem("theme") || "cupcake";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    </script>
 
-  <?php $this->head() ?>
+    <!-- ✅ 2. Tailwind + DaisyUI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+      /* ✨ Smooth fade animation for sidebar overlay */
+      #overlay {
+        transition: opacity 0.3s ease-in-out, visibility 0.3s;
+      }
+      #sidebar {
+        transition: transform 0.3s ease-in-out;
+      }
+    </style>
+
+    <?php $this->head() ?>
 </head>
 
-<body class="min-h-screen bg-gradient-to-b from-[#f6f8fc] via-[#eef2ff] to-[#e0e7ff] text-base-content flex">
-<?php $this->beginBody(); ?>
+<body class="font-sans bg-base-200 text-base-content min-h-screen overflow-x-hidden transition-colors duration-500">
+<?php $this->beginBody() ?>
 
-<!-- Sidebar -->
-<aside class="w-64 bg-gradient-to-b from-primary to-blue-900 text-primary-content shadow-2xl hidden md:flex flex-col fixed h-full">
-  <div class="p-5 border-b border-base-300/30">
-    <h1 class="text-xl font-bold tracking-tight">
-      <a href="<?= Url::to(['site/index']) ?>" class="text-white">Receipt Tracker</a>
-    </h1>
+<!-- ✅ Sidebar Overlay (mobile only) -->
+<div id="overlay" 
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden opacity-0 md:hidden"></div>
+
+<!-- ✅ Sidebar -->
+<aside id="sidebar"
+  class="fixed inset-y-0 left-0 w-64 bg-base-100 border-r border-base-300 flex flex-col shadow-xl z-40 
+         -translate-x-full md:translate-x-0 md:shadow-none md:border-none">
+  <div class="flex items-center justify-between p-4 border-b border-base-300">
+    <button class="btn btn-xs btn-ghost md:hidden" onclick="toggleSidebar()">
+      <i class="fa-solid fa-xmark text-base-content"></i>
+    </button>
   </div>
 
-  <nav class="flex-1 p-4 space-y-2">
-    <?php
-    $currentRoute = Yii::$app->controller->route;
-    $menuItems = [
-        ['label' => 'Dashboard', 'icon' => 'fa-chart-line', 'url' => ['site/dashboard']],
-        ['label' => 'Receipts', 'icon' => 'fa-receipt', 'url' => ['receipt/index']],
-        ['label' => 'Categories', 'icon' => 'fa-tags', 'url' => ['category/index']],
-        ['label' => 'Reports', 'icon' => 'fa-file-invoice', 'url' => ['report/index']],
-    ];
-    foreach ($menuItems as $item):
-        $isActive = Yii::$app->urlManager->createUrl($item['url']) === Url::to([$currentRoute]);
-    ?>
-      <a href="<?= Url::to($item['url']) ?>"
-         class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300
-         <?= $isActive
-           ? 'bg-white/20 text-white font-semibold shadow-inner'
-           : 'hover:bg-white/10 text-white/80 hover:text-white' ?>">
-        <i class="fa-solid <?= $item['icon'] ?>"></i>
-        <?= Html::encode($item['label']) ?>
-      </a>
-    <?php endforeach; ?>
-  </nav>
+<nav class="flex-1 overflow-y-auto p-4">
+  <ul class="menu menu-md">
+    <!-- Profile -->
+    <li>
+      <details open>
+        <summary>
+          <i class="fa-solid fa-user-gear w-5 text-base-content"></i>
+          <span>Profile</span>
+        </summary>
+        <ul>
+          <li>
+            <a href="#">
+              <i class="fa-solid fa-id-card w-4 text-base-content/70"></i>
+              My Profile
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="fa-solid fa-user-pen w-4 text-base-content/70"></i>
+              Setting My Profile
+            </a>
+          </li>
+        </ul>
+      </details>
+    </li>
 
-  <div class="p-4 border-t border-base-300/30">
-    <a href="<?= Url::to(['site/logout']) ?>" data-method="post"
-       class="btn btn-error w-full normal-case shadow-md">
-       <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
-    </a>
+    <!-- Receipt -->
+    <li>
+      <details>
+        <summary>
+          <i class="fa-solid fa-receipt w-5 text-base-content"></i>
+          <span>Receipt</span>
+        </summary>
+        <ul>
+          <li>
+            <a href="#">
+              <i class="fa-solid fa-plus w-4 text-base-content/70"></i>
+              My New Receipt
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="fa-solid fa-magnifying-glass-dollar w-4 text-base-content/70"></i>
+              Track Receipt
+            </a>
+          </li>
+        </ul>
+      </details>
+    </li>
+
+    <!-- Category -->
+    <li>
+      <details>
+        <summary>
+          <i class="fa-solid fa-tags w-5 text-base-content"></i>
+          <span>Category</span>
+        </summary>
+        <ul>
+          <li>
+            <a href="#">
+              <i class="fa-solid fa-folder-tree w-4 text-base-content/70"></i>
+              Set the Category
+            </a>
+          </li>
+        </ul>
+      </details>
+    </li>
+
+    <!-- Report -->
+    <li>
+      <details>
+        <summary>
+          <i class="fa-solid fa-chart-column w-5 text-base-content"></i>
+          <span>Report</span>
+        </summary>
+        <ul>
+          <li>
+            <a href="#">
+              <i class="fa-solid fa-file-export w-4 text-base-content/70"></i>
+              Generate Report
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="fa-solid fa-list-check w-4 text-base-content/70"></i>
+              List of My Report
+            </a>
+          </li>
+        </ul>
+      </details>
+    </li>
+  </ul>
+</nav>
+
+
+  <div class="p-3 border-t border-base-300 text-xs text-center text-base-content/70">
+    © <?= date('Y') ?> Receipt Tracker
   </div>
 </aside>
 
-<!-- Main Content -->
-<div class="flex-1 md:ml-64 flex flex-col">
+<!-- ✅ Main Content -->
+<div class="flex flex-col md:ml-64 transition-all">
+
   <!-- Navbar -->
-<header class="navbar bg-base-100 border-b border-base-300/50 sticky top-0 z-40 shadow-sm px-6 py-3">
-  <div class="flex items-center gap-3">
-    <h2 class="text-lg font-semibold text-primary"><?= Html::encode($this->title) ?></h2>
-  </div>
-  <div class="flex items-center gap-4">
-    <span class="text-sm text-base-content/80">
-      Hey, <strong class="text-primary"><?= Html::encode(Yii::$app->user->identity->username ?? 'User') ?></strong> 👋
-    </span>
-  </div>
-</header>
+  <nav class="navbar bg-base-100 border-b border-base-300 shadow-sm px-6 py-3 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <button class="btn btn-sm btn-ghost text-base-content hover:bg-base-200 md:hidden" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h2 class="text-lg font-semibold text-base-content">
+        <?= Html::encode($this->title) ?>
+      </h2>
+    </div>
+
+    <div class="flex items-center gap-3 text-sm">
+      <span class="hidden sm:inline text-base-content/80">
+        Hai, <span class="text-base-content font-semibold"><?= Html::encode($username) ?></span>
+      </span>
+      <a href="<?= Url::to(['site/logout']) ?>"
+         data-method="post"
+         class="btn btn-sm gap-1 btn-base-content">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        Logout
+      </a>
+    </div>
+  </nav>
 
   <!-- Page Content -->
-  <main class="flex-1 p-6 bg-base-200/40 backdrop-blur-sm rounded-tl-xl">
+  <main class="flex-1 p-6">
     <?= $content ?>
   </main>
-
-  <!-- Footer -->
-  <footer class="p-4 border-t border-base-300 text-center text-sm text-base-content/60 bg-base-100">
-    &copy; <?= date('Y') ?> Receipt Tracker — All rights reserved.
-  </footer>
 </div>
 
-    <!-- Beautiful Theme Switcher -->
-    <div class="fixed bottom-6 left-6 z-50">
-      <div class="dropdown dropdown-top dropdown-hover">
-        <div tabindex="0" role="button" class="btn btn-circle bg-white/20 border-0 backdrop-blur-md hover:bg-white/30 text-base-content shadow-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 3v1m0 16v1m8.485-8.485l.707.707M4.808 4.808l.707.707M21 12h1M2 12H1m16.97 4.243l.707.707M4.808 19.192l.707.707M12 5a7 7 0 107 7h-7z" />
-          </svg>
-        </div>
-        <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-40 text-base-content">
-          <li><a onclick="setTheme('light')">🌤 Light</a></li>
-          <li><a onclick="setTheme('dark')">🌙 Dark</a></li>
-          <li><a onclick="setTheme('cupcake')">🧁 Cupcake</a></li>
-          <li><a onclick="setTheme('business')">💼 Business</a></li>
-          <li><a onclick="setTheme('dracula')">🦇 Dracula</a></li>
-          <li><a onclick="setTheme('Paste')">🦇 Paste;</a></li>
-          <li><a onclick="setTheme('MadaCustom')">🌆 Mada Custom</a></li>
-        </ul>
-      </div>
+<!-- ✅ Floating Theme Switcher -->
+<div class="fixed bottom-6 left-6 z-50">
+  <div class="dropdown dropdown-top dropdown-hover">
+    <div tabindex="0" role="button"
+         class="rounded-full p-3 bg-base-100 border border-base-300 shadow-lg cursor-pointer hover:bg-base-200 transition">
+      <i class="fa-solid fa-circle-half-stroke text-base-content"></i>
     </div>
-    <script>
-      function setTheme(theme) {
-        document.documentElement.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-      }
+    <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-44 text-sm text-base-content">
+      <li><a onclick="setTheme('cupcake')">🧁 Cupcake</a></li>
+      <li><a onclick="setTheme('dracula')">🦇 Dracula</a></li>
+      <li><a onclick="setTheme('valentine')">💖 Valentine</a></li>
+      <li><a onclick="setTheme('pastel')">🖌 Pastel</a></li>
+      <li><a onclick="setTheme('emerald')">🌿 Emerald</a></li>
+    </ul>
+  </div>
+</div>
 
-      // Apply saved theme on load
-      (function() {
-        const saved = localStorage.getItem("theme");
-        if (saved) document.documentElement.setAttribute("data-theme", saved);
-      })();
-    </script>
+<!-- ✅ JS Logic -->
+<script>
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
 
-<?php $this->endBody(); ?>
+  function toggleSidebar() {
+    const isOpen = !sidebar.classList.contains("-translate-x-full");
+
+    if (isOpen) {
+      // Close sidebar
+      sidebar.classList.add("-translate-x-full");
+      overlay.classList.add("opacity-0");
+      setTimeout(() => overlay.classList.add("hidden"), 300);
+    } else {
+      // Open sidebar
+      sidebar.classList.remove("-translate-x-full");
+      overlay.classList.remove("hidden");
+      setTimeout(() => overlay.classList.remove("opacity-0"), 10);
+    }
+  }
+
+  overlay.addEventListener("click", toggleSidebar);
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }
+</script>
+
+<?php $this->endBody() ?>
 </body>
 </html>
-<?php $this->endPage(); ?>
+<?php $this->endPage() ?>

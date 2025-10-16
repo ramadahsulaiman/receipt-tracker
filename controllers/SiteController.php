@@ -71,6 +71,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        $this->layout = 'blank-content';
         $user = null;
 
         if (!Yii::$app->user->isGuest) {
