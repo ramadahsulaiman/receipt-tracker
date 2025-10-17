@@ -20,13 +20,17 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout'],
+                'only' => ['index', 'logout'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        // 'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                    [
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ]
                 ],
             ],
             'verbs' => [
@@ -74,12 +78,35 @@ class SiteController extends Controller
         $this->layout = 'blank-content';
         $user = null;
 
+        // Example data (replace with actual queries later)
+        $totalReceipt = (new \yii\db\Query())->from('receipt')->count();
+        $totalReport = (new \yii\db\Query())->from('report')->count();
+        $totalCategory = (new \yii\db\Query())->from('category')->count();
+
         if (!Yii::$app->user->isGuest) {
             $user = Yii::$app->user->identity;
         }
 
+        // Individual core tax reliefs (2024 values from LHDN Malaysia)
+        $taxReliefs = [
+            'Self & Dependent' => 9000,
+            'EPF & Life Insurance' => 7000,
+            'Parents (each)' => 1500,
+            'Education & Medical Insurance' => 3000,
+            'Lifestyle (books, sports, internet)' => 2500,
+            'SSPN Net Savings' => 8000,
+            'Medical Expenses (self, spouse, child)' => 8000,
+            'Child (Below 18)' => 2000,
+            'Disabled Individual' => 6000,
+        ];
+
         return $this->render('index', [
             'user' => $user,
+            'totalReceipt' => $totalReceipt,
+            'totalReport' => $totalReport,
+            'totalCategory' => $totalCategory,
+            'taxReliefs' => $taxReliefs,
+            
         ]);
     }
 
@@ -143,4 +170,19 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
+
+    public function beforeAction($action)
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        // Prevent caching after logout
+        Yii::$app->response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        Yii::$app->response->headers->set('Pragma', 'no-cache');
+        Yii::$app->response->headers->set('Expires', 'Thu, 01 Jan 1970 00:00:00 GMT');
+
+        return true;
+    }
+
 }

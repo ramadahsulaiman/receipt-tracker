@@ -1,6 +1,8 @@
 <?php
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\web\YiiAsset;
+YiiAsset::register($this);
 
 app\assets\AppAsset::register($this);
 $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->username;
@@ -14,19 +16,20 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= Html::encode($this->title) ?></title>
 
-    <!-- ✅ 1. Set theme early -->
+    <!-- 1. Set theme early -->
     <script>
       const savedTheme = localStorage.getItem("theme") || "cupcake";
       document.documentElement.setAttribute("data-theme", savedTheme);
     </script>
 
-    <!-- ✅ 2. Tailwind + DaisyUI -->
+    <!-- 2. Tailwind + DaisyUI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="<?= Yii::getAlias('@web/css/output.css') ?>">
 
     <style>
-      /* ✨ Smooth fade animation for sidebar overlay */
+      /* Smooth fade animation for sidebar overlay */
       #overlay {
         transition: opacity 0.3s ease-in-out, visibility 0.3s;
       }
@@ -37,7 +40,6 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
       .menu li summary i {
         margin-right: 0.5rem;
       }
-
     </style>
 
     <?php $this->head() ?>
@@ -46,17 +48,17 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
 <body class="font-sans bg-base-200 text-base-content min-h-screen overflow-x-hidden transition-colors duration-500">
 <?php $this->beginBody() ?>
 
-<!-- ✅ Sidebar Overlay (mobile only) -->
+<!-- Sidebar Overlay (mobile only) -->
 <div id="overlay" 
      class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden opacity-0 md:hidden"></div>
 
-<!-- ✅ Sidebar Wrapper -->
+<!-- Sidebar Wrapper -->
 <aside id="sidebar"
   class="fixed inset-y-0 left-0 z-50 flex items-center justify-center
          transition-transform duration-300 ease-in-out
          -translate-x-full md:translate-x-0">
 
-  <!-- ✅ Sidebar Panel -->
+  <!--- Sidebar Panel -->
   <div class="relative w-64 h-[80vh] bg-base-100/95 backdrop-blur-xl border border-base-300/70
               rounded-2xl shadow-2xl flex flex-col justify-between overflow-hidden pointer-events-auto">
 
@@ -70,7 +72,7 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
     <nav class="flex-1 overflow-y-auto p-4">
       <ul class="menu menu-md">
         <li>
-          <details open>
+          <details>
             <summary>
               <i class="fa-solid fa-user-gear w-5 text-base-content/"></i>
               <span>Profile</span>
@@ -141,28 +143,35 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
     <button class="btn btn-sm btn-ghost text-base-content hover:bg-base-200 md:hidden" onclick="toggleSidebar()">
       <i class="fa-solid fa-bars"></i>
     </button>
-    <h2 class="text-lg font-semibold text-base-content">
+      <i class="fa-solid fa-cloud"></i>
+      <h2 class="text-lg font-semibold text-base-content">
       <?= Html::encode($this->title) ?>
     </h2>
   </div>
 
-  <div class="flex items-center gap-3 text-sm">
+  <div class="flex items-center gap-3 text">
     <span class="hidden sm:inline text-base-content/80">
-      Hai, <span class="text-base-content font-semibold"><?= Html::encode($username) ?></span>
+      <strong>Yo!</strong> <span class="text-base-content font-semibold"><?= Html::encode($username) ?></span>
     </span>
-    <a href="<?= Url::to(['site/logout']) ?>"
-       data-method="post"
-       class="btn btn-sm btn-default gap-1 text-base-content hover:text-glow hover: shadow-lg ">
-      <i class="fa-solid fa-right-from-bracket"></i>
-      Logout
-    </a>
+
+<?= Html::beginForm(['site/logout'], 'post', ['class' => 'inline']) ?>
+    <?= Html::submitButton(
+        '<i class="fa-solid fa-right-from-bracket"></i> Keluar',                
+        [
+            'class' => 'btn btn-sm bg-red-500/10 text-red-600 border border-red-500/20 hover:bg-red-500 hover:text-white hover:border-transparent transition-all duration-300',
+            'title' => 'Logout',
+        ]
+    ) ?>
+<?= Html::endForm() ?>
   </div>
 </nav>
 
 
   <!-- Page Content -->
   <main class="flex-1 p-6">
-    <?= $content ?>
+    <div class="pt-14 md:pt-14">
+        <?= $content ?>
+    </div>
   </main>
 </div>
 
