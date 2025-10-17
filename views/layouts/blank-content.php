@@ -2,6 +2,18 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\YiiAsset;
+use app\assets\AppAsset;
+use yii\bootstrap5\BootstrapAsset;
+use yii\bootstrap5\BootstrapPluginAsset;
+use yii\icons\IconAsset;
+use yii\web\View;
+use yii\grid\GridView;
+use yii\widgets\Pjax;
+use yii\bootstrap5\Modal;
+use yii\helpers\ArrayHelper;
+use app\models\Receipt;
+
+
 YiiAsset::register($this);
 
 app\assets\AppAsset::register($this);
@@ -45,7 +57,10 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
     <?php $this->head() ?>
 </head>
 
-<body class="font-sans bg-base-200 text-base-content min-h-screen overflow-x-hidden transition-colors duration-500">
+<body class="font-sans min-h-screen overflow-x-hidden text-base-content
+             bg-gradient-to-br from-[oklch(var(--b3))] to-[oklch(var(--n))] 
+             transition-colors duration-700 relative">
+
 <?php $this->beginBody() ?>
 
 <!-- Sidebar Overlay (mobile only) -->
@@ -78,8 +93,13 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
               <span>Profile</span>
             </summary>
             <ul>
-              <li><a href="#"><i class="fa-solid fa-id-card w-4 text-base-content/70"></i> My Profile</a></li>
-              <li><a href="#"><i class="fa-solid fa-user-pen w-4 text-base-content/70"></i> Setting My Profile</a></li>
+              <li>
+                  <a href="<?= Url::to(['/user/view','id' => Yii::$app->user->id]) ?>">
+                  <i class="fa-solid fa-id-card w-4 text-base-content/70"></i> My Profile</a></li>
+              <li>
+                  <a href="<?= Url::to(['/user/update','id' => Yii::$app->user->id]) ?>">
+                  <i class="fa-solid fa-user-pen w-4 text-base-content/70"></i> Setting My Profile</a>
+              </li>
             </ul>
           </details>
         </li>
@@ -91,8 +111,14 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
               <span>Receipt</span>
             </summary>
             <ul>
-              <li><a href="#"><i class="fa-solid fa-plus w-4 text-base-content/70"></i> My New Receipt</a></li>
-              <li><a href="#"><i class="fa-solid fa-magnifying-glass-dollar w-4 text-base-content/70"></i> Track Receipt</a></li>
+              <li>
+                  <a href="<?= Url::to(['/receipt/create']) ?>">
+                  <i class="fa-solid fa-plus w-4 text-base-content/70"></i> My New Receipt</a>
+              </li>
+              <li>
+                  <a href="<?= Url::to(['/receipt/index'])?>">
+                  <i class="fa-solid fa-magnifying-glass-dollar w-4 text-base-content/70"></i> Track Receipt</a>
+              </li>
             </ul>
           </details>
         </li>
@@ -104,7 +130,14 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
               <span>Category</span>
             </summary>
             <ul>
-              <li><a href="#"><i class="fa-solid fa-folder-tree w-4 text-base-content/70"></i> Set the Category</a></li>
+              <li>
+                  <a href="<?= Url::to(['/category/create']) ?>">
+                  <i class="fa-solid fa-folder-tree w-4 text-base-content/70"></i> Set the Category</a>
+              </li>
+              <li>
+                  <a href="<?= Url::to(['/category/index']) ?>">
+                  <i class="fa-solid fa-list w-4 text-base-content/70"></i> List of My Category</a>
+              </li>
             </ul>
           </details>
         </li>
@@ -116,8 +149,14 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
               <span>Report</span>
             </summary>
             <ul>
-              <li><a href="#"><i class="fa-solid fa-file-export w-4 text-base-content/70"></i> Generate Report</a></li>
-              <li><a href="#"><i class="fa-solid fa-list-check w-4 text-base-content/70"></i> List of My Report</a></li>
+              <li>
+                  <a href="#">
+                  <i class="fa-solid fa-file-export w-4 text-base-content/70"></i> Generate Report</a>
+              </li>
+              <li>
+                  <a href="#">
+                  <i class="fa-solid fa-list-check w-4 text-base-content/70"></i> List of My Report</a>
+              </li>
             </ul>
           </details>
         </li>
@@ -130,15 +169,12 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
 
 
 
-<!-- ✅ Main Content -->
+<!-- Main Content -->
 <div class="flex flex-col md:ml-64 transition-all">
 
   <!-- Navbar -->
-<!-- ✅ Full-width Navbar -->
-<nav class="fixed top-0 left-0 right-0 
-            bg-base-100 border-b border-base-300 shadow-sm
-            flex justify-between items-center 
-            px-6 py-3 z-40">
+<nav class="fixed top-0 left-0 right-0 bg-base-100 border-b border-base-300 shadow-sm
+            backdrop-blur-md px-6 py-3 flex justify-between items-center z-40">
   <div class="flex items-center gap-2">
     <button class="btn btn-sm btn-ghost text-base-content hover:bg-base-200 md:hidden" onclick="toggleSidebar()">
       <i class="fa-solid fa-bars"></i>
@@ -175,12 +211,20 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
   </main>
 </div>
 
-<!-- ✅ Floating Theme Switcher -->
+<!-- Floating Theme Switcher -->
 <div class="fixed bottom-6 left-6 z-50">
   <div class="dropdown dropdown-top dropdown-hover">
     <div tabindex="0" role="button"
-         class="rounded-full p-3 bg-base-100 border border-base-300 shadow-lg cursor-pointer hover:bg-base-200 transition">
-      <i class="fa-solid fa-circle-half-stroke text-base-content"></i>
+         class="flex items-center justify-center w-14 h-14 rounded-full 
+                bg-base-100 text-base-content shadow-[8px_8px_16px_rgba(0,0,0,0.15),-8px_-8px_16px_rgba(255,255,255,0.7)]
+                transition-all duration-300 ease-in-out cursor-pointer hover:shadow-[4px_4px_10px_rgba(0,0,0,0.1),-4px_-4px_10px_rgba(255,255,255,0.8)]
+                hover:scale-105">
+          <svg xmlns="http://www.w3.org/2000/svg" 
+            class="h-6 w-6" 
+            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 3v1m0 16v1m8.485-8.485l.707.707M4.808 4.808l.707.707M21 12h1M2 12H1m16.97 4.243l.707.707M4.808 19.192l.707.707M12 5a7 7 0 107 7h-7z" />
+          </svg>
     </div>
     <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-44 text-sm text-base-content">
       <li><a onclick="setTheme('cupcake')">🧁 Cupcake</a></li>
@@ -192,7 +236,7 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
   </div>
 </div>
 
-<!-- ✅ JS Logic -->
+<!-- JS Logic -->
 <script>
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");

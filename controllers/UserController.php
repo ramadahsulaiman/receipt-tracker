@@ -38,6 +38,7 @@ class UserController extends Controller
      */
     public function actionIndex()
     {
+        $this->layout = 'blank-content';
         $searchModel = new UserSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -55,6 +56,7 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
+        $this->layout = 'blank-content';
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -67,6 +69,7 @@ class UserController extends Controller
      */
     public function actionCreate()
     {
+        $this->layout = 'blank-content';
         $model = new User();
         $this->layout = 'blank';
 
@@ -97,6 +100,7 @@ class UserController extends Controller
      */
     public function actionUpdate($id)
     {
+        $this->layout = 'blank-content';
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {

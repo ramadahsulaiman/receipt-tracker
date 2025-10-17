@@ -29,11 +29,11 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:ital,w
 
 <!-- Main Container -->
 <div class="pt-5 pb-16 px-6 min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 
-             dark:from-gray-900 dark:via-gray-950 dark:to-gray-800 transition-all duration-700">
+             dark:from-black-900 dark:via-black-950 dark:to-black-800 transition-all duration-700 rounded-lg">
 
     <!-- Header -->
     <div class="text-center mb-12 animate-fade-in">
-        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 dark:text-white tracking-tight drop-shadow-sm">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-black-800 dark:text-white tracking-tight drop-shadow-sm">
             🧾 Receipt Tracker Summary
         </h1>
         <p class="text-gray-500 dark:text-gray-400 mt-3 text-base sm:text-lg">
