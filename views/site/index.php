@@ -22,7 +22,7 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:ital,w
 <style>
     h1, p, th, td, span, div {
     font-family: 'Spectral', sans-serif;
-    letter-spacing: 0.3px;
+    /* letter-spacing: 0.px; */
     }
 </style>
 
