@@ -50,6 +50,11 @@ $config = [
         'db' => $db,
         'cloudinary' => [
         'class' => 'app\components\CloudinaryComponent',
+                    // 'cloud' => [
+                    //         'cloud_name' => 'dlehye4j0',
+                    //         'api_key' => '297515468632899',
+                    //         'api_secret' => 'rgsYYUwoqnz_lqLeArqIb8lhxWM',
+                    // ],
         ],
         'as access' => [
             'class' => \yii\filters\AccessControl::class,

@@ -2,45 +2,37 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Receipt;
 use app\models\ReceiptSearch;
+use app\models\ReceiptItem;
+use app\models\ReceiptItemSearch;
 use yii\web\Controller;
+use yii\web\UploadedFile;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\Category;
 
-/**
- * ReceiptController implements the CRUD actions for Receipt model.
- */
 class ReceiptController extends Controller
 {
-    /**
-     * @inheritDoc
-     */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
-                    ],
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
-    /**
-     * Lists all Receipt models.
-     *
-     * @return string
-     */
     public function actionIndex()
     {
         $this->layout = 'blank-content';
+
         $searchModel = new ReceiptSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -48,91 +40,103 @@ class ReceiptController extends Controller
         ]);
     }
 
-    /**
-     * Displays a single Receipt model.
-     * @param int $id ID
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
-    {
-        $this->layout = 'blank-content';
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
 
     /**
-     * Creates a new Receipt model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
+     * Create new receipt with items and upload.
      */
     public function actionCreate()
     {
         $this->layout = 'blank-content';
         $model = new Receipt();
+        $model->user_id = Yii::$app->user->id ?? 1; // fallback if not logged in
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+        $categories = \yii\helpers\ArrayHelper::map(
+            \app\models\Category::find()->orderBy(['name' => SORT_ASC])->all(),
+            'id',
+            'name'
+        );
+
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            $model->receiptFile = UploadedFile::getInstanceByName('receiptFile');
+
+            if ($model->status !== 'Draft') {
+                $model->status = 'Saved';
             }
-        } else {
-            $model->loadDefaultValues();
+
+            // Upload to Cloudinary
+            if ($model->receiptFile) {
+                $model->uploadToCloudinary();
+            }
+
+            // Calculate total amount based on items
+            $items = Yii::$app->request->post('items', []);
+            $totalAmount = 0;
+            if (!empty($items['amount'])) {
+                foreach ($items['amount'] as $amt) {
+                    $totalAmount += floatval($amt);
+                }
+            }
+            $model->amount = $totalAmount;
+
+            if ($model->save()) {
+                // Save items
+                if (!empty($items['name'])) {
+                    foreach ($items['name'] as $i => $name) {
+                        if (trim($name) === '') continue;
+                        $item = new ReceiptItem([
+                            'receipt_id' => $model->id,
+                            'name' => $name,
+                            'amount' => floatval($items['amount'][$i] ?? 0),
+                        ]);
+                        $item->save(false);
+                    }
+                }
+
+                Yii::$app->session->setFlash('success', 
+                    $action === 'draft' ? 'Resit disimpan untuk kemudian.' : 'Resit berjaya disimpan.'
+                );
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                Yii::$app->session->setFlash('error', 'Ralat semasa menyimpan resit.');
+            }
         }
 
         return $this->render('create', [
             'model' => $model,
+            'categories' => $categories,
         ]);
     }
 
     /**
-     * Updates an existing Receipt model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $id ID
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
+     * Display a single receipt with items and uploaded file.
      */
-    public function actionUpdate($id)
+    public function actionView($id)
     {
         $this->layout = 'blank-content';
         $model = $this->findModel($id);
-
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('update', [
+        return $this->render('view', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Deletes an existing Receipt model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $id ID
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
+     * Deletes an existing receipt and its items.
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $model->delete();
 
+        Yii::$app->session->setFlash('success', 'Resit telah dipadam.');
         return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the Receipt model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $id ID
-     * @return Receipt the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     protected function findModel($id)
     {
-        if (($model = Receipt::findOne(['id' => $id])) !== null) {
+        if (($model = Receipt::findOne($id)) !== null) {
             return $model;
         }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException('Resit tidak dijumpai.');
     }
 }
