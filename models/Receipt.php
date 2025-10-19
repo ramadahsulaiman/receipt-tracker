@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\web\UploadedFile;
+use app\models\Category;
+
 
 /**
  * This is the model class for table "receipt".
@@ -22,22 +25,18 @@ use Yii;
  *
  * @property Category $category
  * @property User $user
+ * @property ReceiptItem[] $items
  */
 class Receipt extends \yii\db\ActiveRecord
 {
+    /** @var UploadedFile|null For uploaded PDF/image */
+    public $receiptFile;
 
-
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'receipt';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -48,52 +47,75 @@ class Receipt extends \yii\db\ActiveRecord
             [['amount'], 'number'],
             [['spent_at', 'created_at', 'updated_at'], 'safe'],
             [['notes'], 'string'],
+            [['status'], 'string','max'=>20],
             [['currency'], 'string', 'max' => 3],
             [['vendor', 'cloud_public_id', 'cloud_url'], 'string', 'max' => 255],
+            [['receiptFile'], 'file', 'skipOnEmpty' => true, 'extensions' => ['jpg', 'jpeg', 'png', 'pdf']],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'category_id' => 'Category ID',
-            'amount' => 'Amount',
+            'category_id' => 'Category',
+            'amount' => 'Amount (RM)',
             'currency' => 'Currency',
-            'spent_at' => 'Spent At',
+            'spent_at' => 'Date of Receipt',
             'vendor' => 'Vendor',
             'notes' => 'Notes',
-            'cloud_public_id' => 'Cloud Public ID',
-            'cloud_url' => 'Cloud Url',
+            'cloud_public_id' => 'Cloudinary Public ID',
+            'cloud_url' => 'Cloudinary URL',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
+            'receiptFile' => 'Upload Receipt (Image / PDF)',
+            'status' => 'status'
         ];
     }
 
-    /**
-     * Gets query for [[Category]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
+    /** 🔗 Relation to Category */
     public function getCategory()
     {
         return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
 
-    /**
-     * Gets query for [[User]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
+    /** 🔗 Relation to User */
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    /** 🔗 Relation to Receipt Items */
+    public function getItems()
+    {
+        return $this->hasMany(ReceiptItem::class, ['receipt_id' => 'id']);
+    }
+
+    /** 🧠 Upload Helper (Cloudinary already configured globally) */
+    public function uploadToCloudinary()
+    {
+        if (!$this->receiptFile) return false;
+
+        $upload = Yii::$app->cloudinary->upload($this->receiptFile->tempName, 'receipts');
+
+        $this->cloud_url = $upload['secure_url'];
+        $this->cloud_public_id = $upload['public_id'];
+        return true;
+    }
+
+    public function beforeDelete()
+    {
+        if (!empty($this->cloud_public_id)) {
+            try {
+                Yii::$app->cloudinary->destroy($this->cloud_public_id);
+            } catch (\Exception $e) {
+                Yii::error('Failed to delete Cloudinary file: ' . $e->getMessage());
+            }
+        }
+        return parent::beforeDelete();
     }
 
 }

@@ -5,7 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Receipt;
-
+use app\models\Category;
 /**
  * ReceiptSearch represents the model behind the search form of `app\models\Receipt`.
  */
@@ -19,7 +19,7 @@ class ReceiptSearch extends Receipt
         return [
             [['id', 'user_id', 'category_id'], 'integer'],
             [['amount'], 'number'],
-            [['currency', 'spent_at', 'vendor', 'notes', 'cloud_public_id', 'cloud_url', 'created_at', 'updated_at'], 'safe'],
+            [['currency', 'spent_at', 'vendor', 'notes', 'cloud_public_id', 'cloud_url', 'status', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -40,41 +40,47 @@ class ReceiptSearch extends Receipt
      *
      * @return ActiveDataProvider
      */
+
+
     public function search($params, $formName = null)
     {
-        $query = Receipt::find();
-
-        // add conditions that should always apply here
+        // only show current user’s receipts
+        $query = Receipt::find()
+            ->joinWith('category') // join category table
+            ->where(['receipt.user_id' => \Yii::$app->user->id])
+            ->orderBy(['spent_at' => SORT_DESC]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => ['pageSize' => 10],
         ]);
 
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
+            // if validation fails, show all user records (you can uncomment below to show none)
             // $query->where('0=1');
             return $dataProvider;
         }
 
-        // grid filtering conditions
+        // Filtering
         $query->andFilterWhere([
-            'id' => $this->id,
-            'user_id' => $this->user_id,
-            'category_id' => $this->category_id,
+            // 'id' => $this->id,
+            'receipt.category_id' => $this->category_id,
             'amount' => $this->amount,
-            'spent_at' => $this->spent_at,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'currency', $this->currency])
-            ->andFilterWhere(['like', 'vendor', $this->vendor])
-            ->andFilterWhere(['like', 'notes', $this->notes])
-            ->andFilterWhere(['like', 'cloud_public_id', $this->cloud_public_id])
-            ->andFilterWhere(['like', 'cloud_url', $this->cloud_url]);
+        // Exact date match (optional: could also use a range filter)
+        if (!empty($this->spent_at)) {
+            $query->andWhere(['DATE(spent_at)' => $this->spent_at]);
+        }
 
+        // Text-based search
+        $query->andFilterWhere(['like', 'vendor', $this->vendor])
+              ->andFilterWhere(['like', 'currency', $this->currency])
+              ->andFilterWhere(['like', 'notes', $this->notes])
+              ->andFilterWhere(['like', 'status', $this->status]);
+              
         return $dataProvider;
     }
 }
