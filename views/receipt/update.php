@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /** @var app\models\Receipt $model */
 /** @var array $category */
 
-$this->title = 'Kemaskini Resit #' . Html::encode($model->id);
+$this->title = 'Kemaskini Resit: ' . Html::encode($model->category->name);
 $this->params['breadcrumbs'][] = ['label' => 'Resit', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => 'Resit #' . $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Kemaskini';
@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = 'Kemaskini';
                 <?= Html::encode($this->title) ?>
             </h1>
             <p class="text-sm text-base-content/70 mt-1">
-                Kemas kini maklumat resit anda. Anda boleh menukar fail, kategori, vendor, atau item resit.
+                Kemas kini maklumat resit anda.Boleh tukar fail, kategori, vendor/kedai, atau item resit.
             </p>
 
             <?php if (!empty($model->updated_at)): ?>
@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = 'Kemaskini';
         <div class="flex gap-2">
             <!-- Kembali ke halaman resit -->
             <a href="<?= Yii::$app->urlManager->createUrl(['receipt/view', 'id' => $model->id]) ?>" 
-               class="btn btn-sm btn-outline btn-warning">
+               class="btn btn-sm btn-outline btn-warning text-black">
                 <i class="fa-solid fa-arrow-left"></i> Kembali
             </a>
 

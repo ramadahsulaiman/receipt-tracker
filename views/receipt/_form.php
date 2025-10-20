@@ -13,12 +13,18 @@ use app\models\Category;
 <div class="receipt-form">
 <?php $form = ActiveForm::begin([
     'id' => 'receipt-form',
-    'options' => ['enctype' => 'multipart/form-data', 'class' => 'space-y-8'],
+    'options' => ['enctype' => 'multipart/form-data', 'class' => 'space-y-4'],
+    'fieldConfig' => [
+        'template' => "{label}\n{input}\n{error}",
+        'labelOptions' => ['class' => 'font-medium text-base-content'],
+        'errorOptions' => ['class' => 'text-red-600 text-sm mt-1'],    
+        ]
 ]); ?>
 
+
 <!-- 🔹 Upload Receipt -->
-<div>
-  <h2 class="text-lg font-semibold text-base-content/80 mb-4 border-b border-base-300 pb-2">
+<div class="mt-2">
+  <h2 class="text-lg font-semibold text-base-content mb-4 border-b border-base-300">
     <i class="fa-solid fa-cloud-arrow-up text-primary"></i> Muat Naik Resit
   </h2>
 
@@ -28,7 +34,7 @@ use app\models\Category;
     <input type="file" id="receiptFile" name="receiptFile" accept=".pdf,image/*"
       class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewFile(event)">
 
-    <p class="text-sm text-base-content/70">Klik atau seret fail PDF / imej untuk dimuat naik</p>
+    <p class="text-sm text-base-content/90">Klik atau seret fail PDF / imej untuk dimuat naik</p>
 
     <!-- Paparan sedia ada -->
     <div id="file-preview" class="mt-5 text-center <?= $model->cloud_url ? '' : 'hidden' ?>">
@@ -43,7 +49,7 @@ use app\models\Category;
         <?php endif; ?>
       <?php else: ?>
         <img id="preview-image" class="max-h-64 rounded-lg shadow-md mx-auto hidden">
-        <div id="preview-pdf" class="hidden text-base-content/70">
+        <div id="preview-pdf" class="hidden text-base-content">
           <i class="fa-solid fa-file-pdf text-4xl text-error"></i>
           <p class="mt-2 text-sm">Fail PDF dimuat naik</p>
         </div>
@@ -61,7 +67,7 @@ use app\models\Category;
 <div class="form-control">
   <label class="label"><span class="label-text font-semibold">Tarikh Resit</span></label>
   <div class="relative">
-    <i class="fa-solid fa-calendar-day absolute left-3 top-3 text-base-content/50"></i>
+    <i class="fa-solid fa-calendar-day absolute left-3 top-3 text-base-content"></i>
     <?= $form->field($model, 'spent_at', ['options' => ['class' => 'm-0']])
         ->input('date', ['class' => 'input input-bordered w-full rounded-lg pl-10'])
         ->label(false) ?>
@@ -70,13 +76,13 @@ use app\models\Category;
 
 <!-- 🔹 Category -->
 <div>
-  <h2 class="text-lg font-semibold text-base-content/80 mb-3">
+  <h2 class="text-lg font-semibold text-base-content mb-3">
     <i class="fa-solid fa-tags text-secondary"></i> Kategori
   </h2>
 
   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
     <?php foreach ($category as $id => $label): ?>
-      <label class="flex items-center gap-2 p-3 bg-base-200 rounded-lg cursor-pointer hover:bg-base-300 transition shadow-sm">
+      <label class="flex items-center gap-1 p-2 bg-base-200 rounded-lg cursor-pointer hover:bg-base-300 transition shadow-sm">
         <input type="radio"
                name="Receipt[category_id]"
                value="<?= $id ?>"
@@ -107,23 +113,24 @@ use app\models\Category;
 
 <!-- 🔹 Dynamic Items -->
 <div>
-  <h2 class="text-lg font-semibold text-base-content/80 mb-3">
+  <h2 class="text-lg font-semibold text-base-content mb-3">
     <i class="fa-solid fa-cart-shopping text-primary"></i> Senarai Item
   </h2>
-  <div class="overflow-x-auto">
-    <table class="table w-full border border-base-300 rounded-lg text-sm" id="items-table">
+  <!-- <div class="overflow-x-auto"> -->
+    <div class="text-sm leading-tight">
+    <table class="table w-full border border-base-300 rounded-lg text-base-content text-sm" id="items-table">
       <thead>
         <tr class="bg-base-200">
-          <th>Item</th>
-          <th>Jumlah (RM)</th>
-          <th class="text-center">Tindakan</th>
+          <th class="w-1/2 text-sm text-base font-semibold text-base-content px-3 py-2">Item</th>
+          <th class="w-1/4 text-sm text-base font-semibold text-base-content px-3 py-2">Jumlah (RM)</th>
+          <th class="w-1/6 text-sm text-base font-semibold text-base-content px-3 py-2">Tindakan</th>
         </tr>
       </thead>
       <tbody id="item-rows"></tbody>
     </table>
   </div>
-  <div class="mt-3">
-    <button type="button" class="btn btn-sm btn-outline btn-primary" onclick="addItemRow()">
+  <div class="mt-6">
+    <button type="button" class="btn btn-sm btn-outline btn-primary text-white" onclick="addItemRow()">
       <i class="fa-solid fa-plus"></i> Tambah Item
     </button>
   </div>
@@ -187,12 +194,14 @@ function addItemRow() {
   const tbody = document.getElementById('item-rows');
   const row = document.createElement('tr');
   row.innerHTML = `
-    <td><input type="text" name="items[name][]" class="input input-bordered w-full rounded-lg" placeholder="Nama item"></td>
-    <td><input type="number" step="0.01" name="items[amount][]" class="input input-bordered w-full rounded-lg item-amount" placeholder="0.00" oninput="updateTotal()"></td>
-    <td class="text-center">
-      <button type="button" class="btn btn-xs btn-error" onclick="removeRow(this)">
-        <i class="fa-solid fa-trash"></i>
-      </button>
+    <td><input type="text" name="items[name][]" class="input input-sm input-bordered w-full rounded-lg" placeholder="Nama item"></td>
+    <td><input type="number" step="0.01" name="items[amount][]" class="input input-sm input-bordered w-full rounded-lg item-amount" placeholder="0.00" oninput="updateTotal()"></td>
+    <td class="text-center align-middle">
+      <div class="flex justify-center items-center h-full">
+        <button type="button" class="btn btn-xs btn-error flex items-center justify-center" onclick="removeRow(this)">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
     </td>
   `;
   tbody.appendChild(row);

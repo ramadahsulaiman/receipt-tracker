@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /** @var app\models\Receipt $model */
 /** @var array $category */
 
-$this->title = 'Tambah Resit Baharu';
+$this->title = 'Tambah Resit Baru';
 $this->params['breadcrumbs'][] = ['label' => 'Resit', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -20,7 +20,7 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:wght@4
 
 <style>
   h1, h2, p, span, div, label, input, textarea, select {
-    font-family: 'Spectral', sans-serif;
+    /* font-family: 'Spectral', sans-serif; */
     letter-spacing: 0.2px;
   }
 
@@ -38,28 +38,25 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:wght@4
 
 <div class="receipt-create p-6 bg-base-100 rounded-2xl shadow-lg">
     <!-- 🔹 Header Section -->
-    <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 border-b border-base-300 pb-4">
-        <div class="mb-3 md:mb-0">
-            <h1 class="text-2xl font-bold text-base-content">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-base-content flex items-center justify-center gap-2">
                 <i class="fa-solid fa-receipt text-primary"></i>
                 <?= Html::encode($this->title) ?>
             </h1>
-            <p class="text-sm text-base-content/70 mt-1">
-                Rekodkan resit baharu anda untuk tujuan pemantauan perbelanjaan dan rujukan cukai.
+            <p class="text-sm text-base-content mt-1">
+                Rekodkan resit baru anda untuk tujuan pemantauan perbelanjaan dan rujukan cukai.
             </p>
-        </div>
-
-        <div class="flex gap-2">
+          <!-- <div class="flex gap-2"> -->
             <!-- Butang Senarai Resit -->
-            <a href="<?= Yii::$app->urlManager->createUrl(['receipt/index']) ?>" 
-               class="btn btn-sm btn-outline btn-neutral">
-                <i class="fa-solid fa-list"></i> Senarai Resit
-            </a>
-        </div>
+            <!-- <a href="</?= Yii::$app->urlManager->createUrl(['receipt/index']) ?>"  -->
+               <!-- class="btn btn-sm btn-outline btn-neutral"> -->
+                <!-- <i class="fa-solid fa-list"></i> Senarai Resit -->
+            <!-- </a> -->
+        <!-- </div> -->
     </div>
 
     <!-- 🔹 Create Form Section -->
-    <div class="bg-base-200/40 rounded-xl p-4 md:p-6">
+    <div class="bg-white rounded-xl p-3 md:p-3">
         <?= $this->render('_form', [
             'model' => $model,
             'category' => $category,
@@ -67,7 +64,7 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:wght@4
     </div>
 
     <!-- 🔹 Footer Info -->
-    <div class="mt-6 text-center text-xs text-base-content/50">
+    <div class="mt-6 text-center text-xs text-base-content">
         <i class="fa-regular fa-lightbulb text-warning"></i>
         Pastikan semua maklumat diisi dengan tepat sebelum menyimpan resit.
     </div>

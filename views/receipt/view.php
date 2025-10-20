@@ -1,12 +1,11 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
 /** @var app\models\Receipt $model */
 
-$this->title = 'Resit #' . Html::encode($model->id);
+$this->title = 'Resit: ' . Html::encode($model->category->name);
 $this->params['breadcrumbs'][] = ['label' => 'Resit', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -48,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]) ?>
 
             <a href="<?= Yii::$app->urlManager->createUrl(['receipt/index']) ?>" 
-               class="btn btn-sm btn-outline btn-neutral">
+               class="btn btn-outline btn-neutral">
                 <i class="fa-solid fa-list"></i> Senarai Resit
             </a>
         </div>
@@ -84,75 +83,79 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <!-- 🔹 Maklumat Resit Section -->
     <div class="mb-8">
-        <h2 class="text-lg font-semibold text-base-content/80 mb-3">
+        <h2 class="text-lg font-semibold text-base-content mb-3">
             <i class="fa-solid fa-circle-info text-secondary"></i> Maklumat Resit
         </h2>
-        <?= DetailView::widget([
-            'model' => $model,
-            'options' => ['class' => 'table table-zebra w-full text-sm rounded-xl'],
-            'attributes' => [
-                [
-                    'label' => 'Tarikh Resit',
-                    'value' => Yii::$app->formatter->asDate($model->spent_at, 'php:d M Y'),
-                ],
-                [
-                    'label' => 'Kategori',
-                    'value' => $model->category ? $model->category->name : '-',
-                ],
-                [
-                    'label' => 'Vendor / Kedai',
-                    'value' => $model->vendor,
-                ],
-                [
-                    'label' => 'Catatan',
-                    'value' => $model->notes,
-                ],
-                [
-                    'label' => 'Jumlah (RM)',
-                    'value' => Yii::$app->formatter->asDecimal($model->amount, 2),
-                ],
-                [
-                    'label' => 'Status',
-                    'format' => 'raw',
-                    'value' => function($model) {
-                        $color = match($model->status) {
-                            'Saved' => 'badge-primary',
-                            'Draft' => 'badge-warning',
-                            default => 'badge-neutral'
-                        };
-                        return "<span class='badge $color badge-lg text-white'>" . Html::encode($model->status) . "</span>";
-                    },
-                ],
-            ],
-        ]) ?>
+
+        <div class="overflow-hidden rounded-xl border border-base-300">
+            <table class="w-full text-base-content border-collapse text-sm">
+                <tbody class="divide-y divide-base-300">
+                    <tr>
+                        <td class="w-[30%] bg-base-200 font-semibold text-base-content px-4 py-2 border-r border-base-300">
+                            Tarikh Resit
+                        </td>
+                        <td class="px-4 py-2"><?= Yii::$app->formatter->asDate($model->spent_at, 'php:d M Y') ?></td>
+                    </tr>
+                    <tr>
+                        <td class="bg-base-200 font-semibold text-base-content px-4 py-2 border-r border-base-300">Kategori</td>
+                        <td class="px-4 py-2"><?= Html::encode($model->category ? $model->category->name : '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td class="bg-base-200 font-semibold text-base-content px-4 py-2 border-r border-base-300">Vendor / Kedai</td>
+                        <td class="px-4 py-2"><?= Html::encode($model->vendor) ?></td>
+                    </tr>
+                    <tr>
+                        <td class="bg-base-200 font-semibold text-base-content px-4 py-2 border-r border-base-300">Catatan</td>
+                        <td class="px-4 py-2"><?= Html::encode($model->notes) ?></td>
+                    </tr>
+                    <tr>
+                        <td class="bg-base-200 font-semibold text-base-content px-4 py-2 border-r border-base-300">Jumlah (RM)</td>
+                        <td class="px-4 py-2 font-bold text-success"><?= Yii::$app->formatter->asDecimal($model->amount, 2) ?></td>
+                    </tr>
+                    <tr>
+                        <td class="bg-base-200 font-semibold text-base-content px-4 py-2 border-r border-base-300">Status</td>
+                        <td class="px-4 py-2">
+                            <?php
+                            $color = match($model->status) {
+                                'Saved' => 'badge-primary',
+                                'Draft' => 'badge-warning',
+                                default => 'badge-neutral'
+                            };
+                            ?>
+                            <span class="badge <?= $color ?> badge-md"><?= Html::encode($model->status) ?></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- 🔹 Item List Section -->
+    <!-- 🔹 Senarai Item Section -->
     <?php if ($model->items): ?>
         <div>
-            <h2 class="text-lg font-semibold text-base-content/80 mb-3">
+            <h2 class="text-lg font-semibold text-base-content mb-3">
                 <i class="fa-solid fa-cart-shopping text-success"></i> Senarai Item
             </h2>
             <div class="overflow-x-auto">
-                <table class="table w-full border border-base-300 rounded-lg text-sm">
+                <table class="w-full border border-base-300 rounded-lg text-base-content text-sm">
                     <thead>
-                        <tr class="bg-base-200">
-                            <th>Item</th>
-                            <th>Jumlah (RM)</th>
+                        <tr class="bg-base-200 font-semibold text-base">
+                            <th class="w-1/2 text-base font-semibold text-base-content px-3 py-2">Item</th>
+                            <th class="w-1/4 text-base font-semibold text-base-content px-3 py-2">Jumlah (RM)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($model->items as $item): ?>
                             <tr>
-                                <td><?= Html::encode($item->name) ?></td>
-                                <td><?= Yii::$app->formatter->asDecimal($item->amount, 2) ?></td>
+                                <td class="px-4 py-2"><?= Html::encode($item->name) ?></td>
+                                <td class="px-4 py-2"><?= Yii::$app->formatter->asDecimal($item->amount, 2) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                     <tfoot>
-                        <tr class="bg-base-300 font-semibold">
-                            <td class="text-right">Jumlah Keseluruhan:</td>
-                            <td><?= Yii::$app->formatter->asDecimal($model->amount, 2) ?></td>
+                        <tr class="bg-base-300 font-bold text-base-content text-lg">
+                            <td class="w-1/2 text-right px-4 py-2">Jumlah Keseluruhan:</td>
+                            <td class="w-1/4 px-4 py-2 text-bold">RM <?= Yii::$app->formatter->asDecimal($model->amount, 2) ?></td>
                         </tr>
                     </tfoot>
                 </table>

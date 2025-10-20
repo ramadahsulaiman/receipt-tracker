@@ -36,11 +36,11 @@ use yii\helpers\Html;
           </svg>
         </div>
         <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-40 text-base-content">
-          <li><a onclick="setTheme('cupcake')">🧁 Cupcake</a></li>
-          <li><a onclick="setTheme('dracula')">🦇 Dracula</a></li>
-          <li><a onclick="setTheme('valentine')">💖 Valentine</a></li>
-          <li><a onclick="setTheme('lofi')">🎵 Lofi</a></li>
-          <li><a onclick="setTheme('pastel')">🖌 Pastel</a></li>
+            <li><a onclick="setTheme('cupcake')">🧁 Cupcake</a></li>
+            <li><a onclick="setTheme('dracula')">🦇 Dracula</a></li>
+            <li><a onclick="setTheme('pastel')">🖌 Pastel</a></li>
+            <li><a onclick="setTheme('emerald')">🌿 Emerald</a></li>
+            <li><a onclick="setTheme('light')">light</a></li>
         </ul>
       </div>
     </div>

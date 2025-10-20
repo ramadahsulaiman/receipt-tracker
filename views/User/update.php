@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = 'Kemaskini';
 ?>
 
 <div class="min-h-screen bg-base-200 flex justify-center py-10 px-4">
-  <div class="w-full max-w-3xl bg-base-100 rounded-2xl shadow-xl border border-base-300 overflow-hidden">
+  <div class="w-full max-w-5xl bg-base-100 rounded-2xl shadow-xl border border-base-300 overflow-hidden">
 
     <!-- Header Section -->
     <div class="bg-gradient-to-r from-primary to-secondary p-8 text-center text-base-100 relative">

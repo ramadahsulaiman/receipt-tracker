@@ -19,7 +19,7 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:wght@4
 
 <style>
   h1, h2, p, th, td, span, div {
-    font-family: 'Spectral', sans-serif;
+    /* font-family: 'Spectral', sans-serif; */
     letter-spacing: 0.3px;
   }
   th, td {
@@ -28,7 +28,7 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:wght@4
 </style>
 
 <div class="min-h-screen bg-base-200 text-base-content flex justify-center py-10 px-4">
-  <div class="w-full max-w-4xl bg-base-100 shadow-xl rounded-2xl border border-base-300 overflow-hidden">
+  <div class="w-full max-w-5xl bg-base-100 shadow-xl rounded-2xl border border-base-300 overflow-hidden">
 
     <!-- Header -->
     <div class="bg-gradient-to-r from-primary to-secondary text-base-100 p-8 text-center relative">

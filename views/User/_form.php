@@ -9,7 +9,7 @@ use yii\widgets\ActiveForm;
 ?>
 <style>
     h1, h2, p, th, td, span, div {
-        font-family: 'Spectral';
+        /* font-family: 'Spectral'; */
         letter-spacing: 0.3px;
     }
     th, td {
@@ -23,7 +23,14 @@ use yii\widgets\ActiveForm;
 
 <?php $form = ActiveForm::begin([
     'id' => 'user-form',
-    'options' => ['class' => 'space-y-8'],
+    'options' => [
+      'class' => 'space-y-4'
+      ],
+    'fieldConfig' => [
+        'template' => "{label}\n{input}\n{error}",
+        'labelOptions' => ['class' => 'font-medium text-base-content'],
+        'errorOptions' => ['class' => 'text-red-600 text-sm mt-1'],    
+        ]
 ]); ?>
 
   <!-- 🔹 Section 1: Maklumat Peribadi -->

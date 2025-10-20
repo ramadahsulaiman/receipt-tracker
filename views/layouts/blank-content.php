@@ -22,7 +22,7 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
 
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>" data-theme="cupcake">
+<html lang="<?= Yii::$app->language ?>" data-theme="light">
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,7 +32,7 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
 
     <!-- 1. Set theme early -->
     <script>
-      const savedTheme = localStorage.getItem("theme") || "cupcake";
+      const savedTheme = localStorage.getItem("theme") || "light";
       document.documentElement.setAttribute("data-theme", savedTheme);
     </script>
 
@@ -88,6 +88,12 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
     <!-- Sidebar Menu -->
     <nav class="flex-1 overflow-y-auto p-4">
       <ul class="menu menu-md">
+        <li>
+          <a href="<?= Url::to(['/site/index']) ?>">
+            <i class="fa-solid fa-gauge-high w-5 text-base-content/70"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
         <li>
           <details>
             <summary>
@@ -237,9 +243,9 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
     <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-44 text-sm text-base-content">
       <li><a onclick="setTheme('cupcake')">🧁 Cupcake</a></li>
       <li><a onclick="setTheme('dracula')">🦇 Dracula</a></li>
-      <li><a onclick="setTheme('valentine')">💖 Valentine</a></li>
       <li><a onclick="setTheme('pastel')">🖌 Pastel</a></li>
       <li><a onclick="setTheme('emerald')">🌿 Emerald</a></li>
+      <li><a onclick="setTheme('light')">light</a></li>
     </ul>
   </div>
 </div>
