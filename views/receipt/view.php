@@ -1,105 +1,162 @@
 <?php
+
 use yii\helpers\Html;
+use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
 /** @var app\models\Receipt $model */
 
-$this->title = 'Resit #' . $model->id;
+$this->title = 'Resit #' . Html::encode($model->id);
 $this->params['breadcrumbs'][] = ['label' => 'Resit', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="min-h-screen bg-base-200 text-base-content py-10 px-4">
-  <div class="max-w-5xl mx-auto bg-base-100 shadow-xl rounded-2xl border border-base-300 overflow-hidden">
+<div class="receipt-view p-6 bg-base-100 rounded-2xl shadow-lg">
+    <!-- 🔹 Header -->
+    <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 border-b border-base-300 pb-4">
+        <div class="mb-3 md:mb-0">
+            <h1 class="text-2xl font-bold text-base-content">
+                <i class="fa-solid fa-receipt text-primary"></i>
+                <?= Html::encode($this->title) ?>
+            </h1>
+            <p class="text-sm text-base-content/70 mt-1">
+                Lihat butiran penuh bagi resit ini termasuk fail yang dimuat naik dan senarai item.
+            </p>
 
-    <!-- Header -->
-    <div class="bg-gradient-to-r from-primary to-secondary text-base-100 p-8 text-center relative">
-      <h1 class="text-2xl font-bold"><?= Html::encode($this->title) ?></h1>
-      <p class="text-sm opacity-80 mt-2">
-        <?= Html::encode($model->spent_at) ?> • <?= Html::encode($model->currency) ?>
-      </p>
+            <?php if (!empty($model->updated_at)): ?>
+                <p class="text-xs text-base-content/50 mt-1">
+                    <i class="fa-regular fa-clock text-primary"></i>
+                    Dikemaskini kali terakhir pada:
+                    <?= Yii::$app->formatter->asDatetime($model->updated_at, 'php:d M Y, h:i A') ?>
+                </p>
+            <?php endif; ?>
+        </div>
 
-      <div class="absolute top-6 right-6 flex gap-2">
-        <?= Html::a('<i class="fa-solid fa-pen-to-square"></i>', ['update', 'id' => $model->id], [
-            'class' => 'btn btn-sm btn-outline btn-light',
-            'title' => 'Edit Resit',
-        ]) ?>
-        <?= Html::a('<i class="fa-solid fa-trash"></i>', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-sm btn-error text-white',
-            'data' => [
-                'confirm' => 'Padam resit ini?',
-                'method' => 'post',
+        <div class="flex gap-2">
+            <?= Html::a('<i class="fa-solid fa-pen-to-square"></i> Kemaskini', 
+                ['update', 'id' => $model->id], 
+                ['class' => 'btn btn-sm btn-primary text-white']) ?>
+
+            <?= Html::a('<i class="fa-solid fa-trash"></i> Padam', 
+                ['delete', 'id' => $model->id], 
+                [
+                    'class' => 'btn btn-sm btn-outline btn-error',
+                    'data' => [
+                        'confirm' => 'Adakah anda pasti mahu memadam resit ini?',
+                        'method' => 'post',
+                    ],
+                ]) ?>
+
+            <a href="<?= Yii::$app->urlManager->createUrl(['receipt/index']) ?>" 
+               class="btn btn-sm btn-outline btn-neutral">
+                <i class="fa-solid fa-list"></i> Senarai Resit
+            </a>
+        </div>
+    </div>
+
+    <!-- 🔹 Fail Resit Section -->
+    <div class="mb-8">
+        <h2 class="text-lg font-semibold text-base-content/80 mb-3">
+            <i class="fa-solid fa-cloud-arrow-down text-primary"></i> Fail Resit
+        </h2>
+
+        <?php if ($model->cloud_url): ?>
+            <?php if (strpos($model->cloud_url, '.pdf') !== false): ?>
+                <div class="p-5 border border-base-300 rounded-xl bg-base-200/70 text-center">
+                    <i class="fa-solid fa-file-pdf text-5xl text-error"></i>
+                    <p class="mt-2 text-sm text-base-content/70">Fail PDF dimuat naik</p>
+                    <a href="<?= Html::encode($model->cloud_url) ?>" target="_blank" class="btn btn-sm btn-outline btn-primary mt-3">
+                        <i class="fa-solid fa-eye"></i> Lihat PDF
+                    </a>
+                </div>
+            <?php else: ?>
+                <div class="p-5 border border-base-300 rounded-xl bg-base-200/70 text-center">
+                    <img src="<?= Html::encode($model->cloud_url) ?>" class="max-h-80 rounded-lg shadow-md mx-auto" alt="Receipt Image">
+                </div>
+            <?php endif; ?>
+        <?php else: ?>
+            <div class="p-6 border-2 border-dashed border-base-300 rounded-xl text-base-content/60 text-center">
+                <i class="fa-solid fa-file-circle-xmark text-5xl mb-2"></i>
+                <p>Tiada fail resit dimuat naik.</p>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- 🔹 Maklumat Resit Section -->
+    <div class="mb-8">
+        <h2 class="text-lg font-semibold text-base-content/80 mb-3">
+            <i class="fa-solid fa-circle-info text-secondary"></i> Maklumat Resit
+        </h2>
+        <?= DetailView::widget([
+            'model' => $model,
+            'options' => ['class' => 'table table-zebra w-full text-sm rounded-xl'],
+            'attributes' => [
+                [
+                    'label' => 'Tarikh Resit',
+                    'value' => Yii::$app->formatter->asDate($model->spent_at, 'php:d M Y'),
+                ],
+                [
+                    'label' => 'Kategori',
+                    'value' => $model->category ? $model->category->name : '-',
+                ],
+                [
+                    'label' => 'Vendor / Kedai',
+                    'value' => $model->vendor,
+                ],
+                [
+                    'label' => 'Catatan',
+                    'value' => $model->notes,
+                ],
+                [
+                    'label' => 'Jumlah (RM)',
+                    'value' => Yii::$app->formatter->asDecimal($model->amount, 2),
+                ],
+                [
+                    'label' => 'Status',
+                    'format' => 'raw',
+                    'value' => function($model) {
+                        $color = match($model->status) {
+                            'Saved' => 'badge-primary',
+                            'Draft' => 'badge-warning',
+                            default => 'badge-neutral'
+                        };
+                        return "<span class='badge $color badge-lg text-white'>" . Html::encode($model->status) . "</span>";
+                    },
+                ],
             ],
         ]) ?>
-      </div>
     </div>
 
-    <!-- Body -->
-    <div class="p-8 space-y-8">
-
-      <!-- File Preview -->
-      <?php if ($model->cloud_url): ?>
-      <div class="text-center">
-        <h2 class="text-lg font-semibold text-base-content/80 mb-3">Resit Dimuat Naik</h2>
-        <?php if (str_contains($model->cloud_url, '.pdf')): ?>
-          <div class="text-error text-sm">
-            <i class="fa-solid fa-file-pdf text-4xl"></i>
-            <p class="mt-2">Fail PDF dimuat naik</p>
-            <?= Html::a('Buka PDF', $model->cloud_url, ['class' => 'btn btn-outline btn-sm mt-3', 'target' => '_blank']) ?>
-          </div>
-        <?php else: ?>
-          <img src="<?= Html::encode($model->cloud_url) ?>" alt="Receipt Image" class="rounded-xl shadow-md max-h-96 mx-auto">
-        <?php endif; ?>
-      </div>
-      <?php endif; ?>
-
-      <!-- Info Table -->
-      <div class="overflow-x-auto">
-        <table class="table w-full border border-base-300 rounded-lg text-sm">
-          <tbody>
-            <tr><th>Kategori</th><td><?= Html::encode($model->category?->name ?? '-') ?></td></tr>
-            <tr><th>Tarikh</th><td><?= Html::encode($model->spent_at) ?></td></tr>
-            <tr><th>Vendor</th><td><?= Html::encode($model->vendor ?? '-') ?></td></tr>
-            <tr><th>Catatan</th><td><?= Html::encode($model->notes ?? '-') ?></td></tr>
-            <tr><th>Status</th><td><?= Html::encode($model->status ?? 'Saved') ?></td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Items -->
-      <div>
-        <h2 class="text-lg font-semibold mb-4 text-base-content/80">
-          <i class="fa-solid fa-cart-shopping text-primary"></i> Item dalam Resit
-        </h2>
-        <div class="overflow-x-auto">
-          <table class="table w-full border border-base-300 rounded-lg text-sm">
-            <thead>
-              <tr class="bg-base-200">
-                <th>Item</th>
-                <th class="text-right">Jumlah (RM)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php 
-              $total = 0;
-              foreach ($model->items as $item): 
-                  $total += $item->amount;
-              ?>
-              <tr>
-                <td><?= Html::encode($item->name) ?></td>
-                <td class="text-right"><?= number_format($item->amount, 2) ?></td>
-              </tr>
-              <?php endforeach; ?>
-            </tbody>
-            <tfoot>
-              <tr class="bg-base-200 font-bold">
-                <td>Jumlah Keseluruhan</td>
-                <td class="text-right text-primary"><?= number_format($total, 2) ?> RM</td>
-              </tr>
-            </tfoot>
-          </table>
+    <!-- 🔹 Item List Section -->
+    <?php if ($model->items): ?>
+        <div>
+            <h2 class="text-lg font-semibold text-base-content/80 mb-3">
+                <i class="fa-solid fa-cart-shopping text-success"></i> Senarai Item
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="table w-full border border-base-300 rounded-lg text-sm">
+                    <thead>
+                        <tr class="bg-base-200">
+                            <th>Item</th>
+                            <th>Jumlah (RM)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($model->items as $item): ?>
+                            <tr>
+                                <td><?= Html::encode($item->name) ?></td>
+                                <td><?= Yii::$app->formatter->asDecimal($item->amount, 2) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                    <tfoot>
+                        <tr class="bg-base-300 font-semibold">
+                            <td class="text-right">Jumlah Keseluruhan:</td>
+                            <td><?= Yii::$app->formatter->asDecimal($model->amount, 2) ?></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
+    <?php endif; ?>
 </div>

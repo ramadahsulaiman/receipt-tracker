@@ -1,12 +1,12 @@
 <?php
 
 use yii\helpers\Html;
-use app\models\Category;
 
 /** @var yii\web\View $this */
 /** @var app\models\Receipt $model */
+/** @var array $category */
 
-$this->title = 'Tambah Resit Baru';
+$this->title = 'Tambah Resit Baharu';
 $this->params['breadcrumbs'][] = ['label' => 'Resit', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -36,35 +36,39 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:wght@4
   }
 </style>
 
-<div class="min-h-screen bg-gradient-to-br from-base-200 to-base-300 text-base-content flex justify-center py-10 px-4">
-  <div class="w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden border border-base-300 receipt-card">
+<div class="receipt-create p-6 bg-base-100 rounded-2xl shadow-lg">
+    <!-- 🔹 Header Section -->
+    <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 border-b border-base-300 pb-4">
+        <div class="mb-3 md:mb-0">
+            <h1 class="text-2xl font-bold text-base-content">
+                <i class="fa-solid fa-receipt text-primary"></i>
+                <?= Html::encode($this->title) ?>
+            </h1>
+            <p class="text-sm text-base-content/70 mt-1">
+                Rekodkan resit baharu anda untuk tujuan pemantauan perbelanjaan dan rujukan cukai.
+            </p>
+        </div>
 
-    <!-- Header -->
-    <div class="receipt-header p-6 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="bg-base-100/20 rounded-full p-3 shadow-md">
-          <i class="fa-solid fa-receipt text-2xl"></i>
+        <div class="flex gap-2">
+            <!-- Butang Senarai Resit -->
+            <a href="<?= Yii::$app->urlManager->createUrl(['receipt/index']) ?>" 
+               class="btn btn-sm btn-outline btn-neutral">
+                <i class="fa-solid fa-list"></i> Senarai Resit
+            </a>
         </div>
-        <div>
-          <h1 class="text-2xl font-bold"><?= Html::encode($this->title) ?></h1>
-          <p class="text-sm opacity-90">Rekodkan resit baru anda di sini untuk rujukan perbelanjaan.</p>
-        </div>
-      </div>
-      <div>
-        <a href="<?= \yii\helpers\Url::to(['index']) ?>"
-           class="btn btn-sm btn-outline btn-light hover:btn-primary">
-          <i class="fa-solid fa-arrow-left"></i> Kembali
-        </a>
-      </div>
     </div>
 
-    <!-- Form Section -->
-    <div class="p-8">
-      <?= $this->render('_form', [
-          'model' => $model,
-          'categories' => $categories,
-      ]) ?>
+    <!-- 🔹 Create Form Section -->
+    <div class="bg-base-200/40 rounded-xl p-4 md:p-6">
+        <?= $this->render('_form', [
+            'model' => $model,
+            'category' => $category,
+        ]) ?>
     </div>
 
-  </div>
+    <!-- 🔹 Footer Info -->
+    <div class="mt-6 text-center text-xs text-base-content/50">
+        <i class="fa-regular fa-lightbulb text-warning"></i>
+        Pastikan semua maklumat diisi dengan tepat sebelum menyimpan resit.
+    </div>
 </div>

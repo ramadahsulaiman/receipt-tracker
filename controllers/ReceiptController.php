@@ -50,7 +50,7 @@ class ReceiptController extends Controller
         $model = new Receipt();
         $model->user_id = Yii::$app->user->id ?? 1; // fallback if not logged in
 
-        $categories = \yii\helpers\ArrayHelper::map(
+        $category = \yii\helpers\ArrayHelper::map(
             \app\models\Category::find()->orderBy(['name' => SORT_ASC])->all(),
             'id',
             'name'
@@ -59,6 +59,9 @@ class ReceiptController extends Controller
         if (Yii::$app->request->isPost) {
             $model->load(Yii::$app->request->post());
             $model->receiptFile = UploadedFile::getInstanceByName('receiptFile');
+
+            //capture the button submit save or as draft
+            $action = Yii::$app->request->post('action');
 
             if ($model->status !== 'Draft') {
                 $model->status = 'Saved';
@@ -93,8 +96,11 @@ class ReceiptController extends Controller
                     }
                 }
 
-                Yii::$app->session->setFlash('success', 
-                    $action === 'draft' ? 'Resit disimpan untuk kemudian.' : 'Resit berjaya disimpan.'
+                Yii::$app->session->setFlash(
+                    'success', 
+                    $action === 'draft' 
+                    ? 'Resit disimpan untuk kemudian.' 
+                    : 'Resit berjaya disimpan.'
                 );
                 return $this->redirect(['view', 'id' => $model->id]);
             } else {
@@ -104,7 +110,7 @@ class ReceiptController extends Controller
 
         return $this->render('create', [
             'model' => $model,
-            'categories' => $categories,
+            'category' => $category,
         ]);
     }
 
@@ -119,6 +125,55 @@ class ReceiptController extends Controller
             'model' => $model,
         ]);
     }
+
+    public function actionUpdate($id)
+    {
+        $this->layout = 'blank-content';
+        $model = $this->findModel($id);
+
+        // Ambil kategori dari table Category
+        $category = \yii\helpers\ArrayHelper::map(
+            \app\models\Category::find()->orderBy(['name' => SORT_ASC])->all(),
+            'id',
+            'name'
+        );
+
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            $model->receiptFile = UploadedFile::getInstanceByName('receiptFile');
+
+            if ($model->status !== 'Draft') {
+                $model->status = 'Saved';
+            }
+
+            if ($model->receiptFile) {
+                $model->uploadToCloudinary();
+            }
+
+            // Kira jumlah semula
+            $items = Yii::$app->request->post('items', []);
+            $totalAmount = 0;
+            if (!empty($items['amount'])) {
+                foreach ($items['amount'] as $amt) {
+                    $totalAmount += floatval($amt);
+                }
+            }
+            $model->amount = $totalAmount;
+
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Resit berjaya dikemaskini.');
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                Yii::$app->session->setFlash('error', 'Ralat semasa mengemaskini resit.');
+            }
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+            'category' => $category,
+        ]);
+    }
+
 
     /**
      * Deletes an existing receipt and its items.

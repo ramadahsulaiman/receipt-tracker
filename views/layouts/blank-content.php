@@ -26,6 +26,8 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?= Html::csrfMetaTags() ?> 
+
     <title><?= Html::encode($this->title) ?></title>
 
     <!-- 1. Set theme early -->
@@ -206,6 +208,12 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
   <!-- Page Content -->
   <main class="flex-1 p-6">
     <div class="pt-14 md:pt-14">
+      <?php foreach (Yii::$app->session->getAllFlashes() as $type => $message): ?>
+          <div class="alert alert-<?= $type ?> alert-dismissible fade show" role="alert">
+              <?= Html::encode($message) ?>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+      <?php endforeach; ?>
         <?= $content ?>
     </div>
   </main>
@@ -263,6 +271,20 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }
+</script>
+
+<script>
+  // Automatically hide Bootstrap alert after 3 seconds
+  setTimeout(() => {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      // Use Bootstrap's fade class to animate
+      alert.classList.remove('show');
+      alert.classList.add('fade');
+      // Remove from DOM after fade-out animation
+      setTimeout(() => alert.remove(), 500);
+    });
+  }, 3000);
 </script>
 
 <?php $this->endBody() ?>

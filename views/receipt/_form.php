@@ -24,16 +24,32 @@ use app\models\Category;
 
   <div class="flex flex-col items-center justify-center border-2 border-dashed border-base-300 rounded-xl p-6 bg-base-100/70 hover:border-primary transition group relative">
     <i class="fa-solid fa-file-arrow-up text-4xl text-base-content/50 mb-3 group-hover:text-primary transition"></i>
+
     <input type="file" id="receiptFile" name="receiptFile" accept=".pdf,image/*"
       class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewFile(event)">
+
     <p class="text-sm text-base-content/70">Klik atau seret fail PDF / imej untuk dimuat naik</p>
 
-    <div id="file-preview" class="mt-5 hidden text-center">
-      <img id="preview-image" class="max-h-64 rounded-lg shadow-md mx-auto hidden">
-      <div id="preview-pdf" class="hidden text-base-content/70">
-        <i class="fa-solid fa-file-pdf text-4xl text-error"></i>
-        <p class="mt-2 text-sm">Fail PDF dimuat naik</p>
-      </div>
+    <!-- Paparan sedia ada -->
+    <div id="file-preview" class="mt-5 text-center <?= $model->cloud_url ? '' : 'hidden' ?>">
+      <?php if ($model->cloud_url): ?>
+        <?php if (strpos($model->cloud_url, '.pdf') !== false): ?>
+          <div id="preview-pdf">
+            <i class="fa-solid fa-file-pdf text-4xl text-error"></i>
+            <p class="mt-2 text-sm">Fail PDF sedia ada dimuat naik</p>
+          </div>
+        <?php else: ?>
+          <img id="preview-image" src="<?= Html::encode($model->cloud_url) ?>" class="max-h-64 rounded-lg shadow-md mx-auto">
+        <?php endif; ?>
+      <?php else: ?>
+        <img id="preview-image" class="max-h-64 rounded-lg shadow-md mx-auto hidden">
+        <div id="preview-pdf" class="hidden text-base-content/70">
+          <i class="fa-solid fa-file-pdf text-4xl text-error"></i>
+          <p class="mt-2 text-sm">Fail PDF dimuat naik</p>
+        </div>
+      <?php endif; ?>
+
+      <input type="hidden" id="removeFileInput" name="removeFile" value="0">
       <button type="button" onclick="removeFile()" class="btn btn-xs btn-outline btn-error mt-3">
         <i class="fa-solid fa-trash"></i> Padam Fail
       </button>
@@ -59,7 +75,7 @@ use app\models\Category;
   </h2>
 
   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-    <?php foreach ($categories as $id => $label): ?>
+    <?php foreach ($category as $id => $label): ?>
       <label class="flex items-center gap-2 p-3 bg-base-200 rounded-lg cursor-pointer hover:bg-base-300 transition shadow-sm">
         <input type="radio"
                name="Receipt[category_id]"
@@ -139,9 +155,11 @@ function previewFile(event) {
   const previewContainer = document.getElementById('file-preview');
   const imagePreview = document.getElementById('preview-image');
   const pdfPreview = document.getElementById('preview-pdf');
+  const removeInput = document.getElementById('removeFileInput');
 
   if (!file) return;
   previewContainer.classList.remove('hidden');
+  removeInput.value = '0'; // user upload new file
 
   if (file.type.includes('pdf')) {
     pdfPreview.classList.remove('hidden');
@@ -162,6 +180,7 @@ function removeFile() {
   document.getElementById('preview-image').classList.add('hidden');
   document.getElementById('preview-pdf').classList.add('hidden');
   document.getElementById('receiptFile').value = '';
+  document.getElementById('removeFileInput').value = '1'; // mark file to remove
 }
 
 function addItemRow() {
