@@ -56,6 +56,21 @@ class ReceiptController extends Controller
             'name'
         );
 
+        $removeFile = Yii::$app->request->post('removeFile', 0);
+
+        if ($removeFile && !$model->receiptFile) {
+            if ($model->cloud_public_id) {
+                try {
+                    \Cloudinary\Api\Upload\UploadApi::destroy($model->cloud_public_id);
+                } catch (\Exception $e) {
+                    Yii::warning('Gagal padam dari Cloudinary: ' . $e->getMessage());
+                }
+            }
+            $model->cloud_url = null;
+            $model->cloud_public_id = null;
+        }
+
+
         if (Yii::$app->request->isPost) {
             $model->load(Yii::$app->request->post());
             $model->receiptFile = UploadedFile::getInstanceByName('receiptFile');

@@ -2,8 +2,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use yii\helpers\ArrayHelper; 
-use app\models\Category;
 
 /** @var yii\web\View $this */
 /** @var app\models\Receipt $model */
@@ -17,10 +15,9 @@ use app\models\Category;
     'fieldConfig' => [
         'template' => "{label}\n{input}\n{error}",
         'labelOptions' => ['class' => 'font-medium text-base-content'],
-        'errorOptions' => ['class' => 'text-red-600 text-sm mt-1'],    
-        ]
+        'errorOptions' => ['class' => 'text-red-600 text-sm mt-1'],
+    ],
 ]); ?>
-
 
 <!-- 🔹 Upload Receipt -->
 <div class="mt-2">
@@ -28,42 +25,52 @@ use app\models\Category;
     <i class="fa-solid fa-cloud-arrow-up text-primary"></i> Muat Naik Resit
   </h2>
 
-  <div class="flex flex-col items-center justify-center border-2 border-dashed border-base-300 rounded-xl p-6 bg-base-100/70 hover:border-primary transition group relative">
-    <i class="fa-solid fa-file-arrow-up text-4xl text-base-content/50 mb-3 group-hover:text-primary transition"></i>
+  <div class="border border-dashed border-base-300 rounded-xl p-6 bg-base-100/70">
+    <!-- Kawasan BUTANG upload (tiada overlay) -->
+    <div id="upload-actions" class="<?= $model->cloud_url ? 'hidden' : '' ?> text-center cursor-pointer flex justify-center flex-col items-center">
+      <input type="file" id="receiptFile" name="receiptFile" accept=".pdf,image/*" class="hidden">
+      <button type="button" 
+      class="btn bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-300 btn-sm flex items-center gap-2 mt-3 rounded-xl transition-all shadow-sm hover:shadow-md"
+      id="btn-choose-file">
+        <i class="fa-solid fa-upload"></i> Pilih Fail
+      </button>
+      <p class="text-xs mt-2 text-base-content/70">Sokongan: PDF / imej. Anda juga boleh seret & lepas terus ke butang ini.</p>
+    </div>
 
-    <input type="file" id="receiptFile" name="receiptFile" accept=".pdf,image/*"
-      class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewFile(event)">
-
-    <p class="text-sm text-base-content/90">Klik atau seret fail PDF / imej untuk dimuat naik</p>
-
-    <!-- Paparan sedia ada -->
+    <!-- Paparan PREVIEW (terpisah dari butang upload) -->
     <div id="file-preview" class="mt-5 text-center <?= $model->cloud_url ? '' : 'hidden' ?>">
-      <?php if ($model->cloud_url): ?>
-        <?php if (strpos($model->cloud_url, '.pdf') !== false): ?>
-          <div id="preview-pdf">
-            <i class="fa-solid fa-file-pdf text-4xl text-error"></i>
-            <p class="mt-2 text-sm">Fail PDF sedia ada dimuat naik</p>
-          </div>
-        <?php else: ?>
-          <img id="preview-image" src="<?= Html::encode($model->cloud_url) ?>" class="max-h-64 rounded-lg shadow-md mx-auto">
-        <?php endif; ?>
+      <?php if (!empty($model->cloud_url) && strpos($model->cloud_url, '.pdf') !== false): ?>
+        <div id="preview-pdf">
+          <i class="fa-solid fa-file-pdf text-5xl text-error mb-2"></i>
+          <p class="text-sm text-base-content/70">Fail PDF sedia ada</p>
+          <a href="<?= Html::encode($model->cloud_url) ?>" target="_blank" class="btn btn-xs btn-outline btn-primary mt-2">
+            <i class="fa-solid fa-eye"></i> Lihat PDF
+          </a>
+        </div>
+        <img id="preview-image" class="hidden">
+      <?php elseif (!empty($model->cloud_url)): ?>
+        <img id="preview-image" src="<?= Html::encode($model->cloud_url) ?>" class="max-h-64 rounded-lg shadow-md mx-auto">
+        <div id="preview-pdf" class="hidden"></div>
       <?php else: ?>
         <img id="preview-image" class="max-h-64 rounded-lg shadow-md mx-auto hidden">
-        <div id="preview-pdf" class="hidden text-base-content">
-          <i class="fa-solid fa-file-pdf text-4xl text-error"></i>
-          <p class="mt-2 text-sm">Fail PDF dimuat naik</p>
-        </div>
+        <div id="preview-pdf" class="hidden"></div>
       <?php endif; ?>
 
+      <!-- Flag untuk controller -->
       <input type="hidden" id="removeFileInput" name="removeFile" value="0">
-      <button type="button" onclick="removeFile()" class="btn btn-xs btn-outline btn-error mt-3">
-        <i class="fa-solid fa-trash"></i> Padam Fail
-      </button>
+
+      <div class="mt-3 flex justify-center">
+        <button type="button" id="btn-remove-file"
+          class="btn bg-red-100 text-red-700 hover:bg-red-200 border border-red-300 btn-sm flex items-center gap-2 mt-3 rounded-xl transition-all">
+          <i class="fa-solid fa-trash"></i>
+          <span>Padam Fail</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- 🔹 Date of Receipt -->
+<!-- 🔹 Tarikh Resit -->
 <div class="form-control">
   <label class="label"><span class="label-text font-semibold">Tarikh Resit</span></label>
   <div class="relative">
@@ -74,12 +81,11 @@ use app\models\Category;
   </div>
 </div>
 
-<!-- 🔹 Category -->
+<!-- 🔹 Kategori -->
 <div>
   <h2 class="text-lg font-semibold text-base-content mb-3">
     <i class="fa-solid fa-tags text-secondary"></i> Kategori
   </h2>
-
   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
     <?php foreach ($category as $id => $label): ?>
       <label class="flex items-center gap-1 p-2 bg-base-200 rounded-lg cursor-pointer hover:bg-base-300 transition shadow-sm">
@@ -94,7 +100,6 @@ use app\models\Category;
   </div>
 </div>
 
-
 <!-- 🔹 Vendor -->
 <div>
   <label class="label"><span class="label-text font-semibold">Vendor / Kedai</span></label>
@@ -103,7 +108,7 @@ use app\models\Category;
       ->label(false) ?>
 </div>
 
-<!-- 🔹 Notes -->
+<!-- 🔹 Catatan -->
 <div>
   <label class="label"><span class="label-text font-semibold">Catatan</span></label>
   <?= $form->field($model, 'notes', ['options' => ['class' => 'm-0']])
@@ -111,26 +116,27 @@ use app\models\Category;
       ->label(false) ?>
 </div>
 
-<!-- 🔹 Dynamic Items -->
+<!-- 🔹 Senarai Item -->
 <div>
   <h2 class="text-lg font-semibold text-base-content mb-3">
     <i class="fa-solid fa-cart-shopping text-primary"></i> Senarai Item
   </h2>
-  <!-- <div class="overflow-x-auto"> -->
-    <div class="text-sm leading-tight">
+
+  <div class="text-sm leading-tight">
     <table class="table w-full border border-base-300 rounded-lg text-base-content text-sm" id="items-table">
       <thead>
         <tr class="bg-base-200">
-          <th class="w-1/2 text-sm text-base font-semibold text-base-content px-3 py-2">Item</th>
-          <th class="w-1/4 text-sm text-base font-semibold text-base-content px-3 py-2">Jumlah (RM)</th>
-          <th class="w-1/6 text-sm text-base font-semibold text-base-content px-3 py-2">Tindakan</th>
+          <th class="w-1/2 px-3 py-2">Item</th>
+          <th class="w-1/4 px-3 py-2">Jumlah (RM)</th>
+          <th class="w-1/6 px-3 py-2">Tindakan</th>
         </tr>
       </thead>
       <tbody id="item-rows"></tbody>
     </table>
   </div>
+
   <div class="mt-6">
-    <button type="button" class="btn btn-sm btn-outline btn-primary text-white" onclick="addItemRow()">
+    <button type="button" class="btn btn-sm btn-outline btn-primary text-white" id="btn-add-item">
       <i class="fa-solid fa-plus"></i> Tambah Item
     </button>
   </div>
@@ -155,68 +161,142 @@ use app\models\Category;
 <?php ActiveForm::end(); ?>
 </div>
 
-<!-- ✅ JS Scripts -->
+<!-- 🔧 JS (SATU blok sahaja, tiada fungsi berganda) -->
 <script>
-function previewFile(event) {
-  const file = event.target.files[0];
-  const previewContainer = document.getElementById('file-preview');
-  const imagePreview = document.getElementById('preview-image');
-  const pdfPreview = document.getElementById('preview-pdf');
-  const removeInput = document.getElementById('removeFileInput');
+(function() {
+  const fileInput     = document.getElementById('receiptFile');
+  const btnChoose     = document.getElementById('btn-choose-file');
+  const previewWrap   = document.getElementById('file-preview');
+  const uploadActions = document.getElementById('upload-actions');
+  const imgPreview    = document.getElementById('preview-image');
+  const pdfPreview    = document.getElementById('preview-pdf');
+  const removeFlag    = document.getElementById('removeFileInput');
+  const btnRemove     = document.getElementById('btn-remove-file');
 
-  if (!file) return;
-  previewContainer.classList.remove('hidden');
-  removeInput.value = '0'; // user upload new file
+  // ––– Upload –––
+  if (btnChoose) {
+    // support drag & drop pada butang
+    btnChoose.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      fileInput.click();
+    });
 
-  if (file.type.includes('pdf')) {
-    pdfPreview.classList.remove('hidden');
-    imagePreview.classList.add('hidden');
-  } else {
-    const reader = new FileReader();
-    reader.onload = e => {
-      imagePreview.src = e.target.result;
-      imagePreview.classList.remove('hidden');
-      pdfPreview.classList.add('hidden');
-    };
-    reader.readAsDataURL(file);
+    btnChoose.addEventListener('dragover', function(e) {
+      e.preventDefault();
+    });
+    btnChoose.addEventListener('drop', function(e) {
+      e.preventDefault();
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+        fileInput.files = e.dataTransfer.files;
+        handlePreview(fileInput.files[0]);
+      }
+    });
   }
-}
 
-function removeFile() {
-  document.getElementById('file-preview').classList.add('hidden');
-  document.getElementById('preview-image').classList.add('hidden');
-  document.getElementById('preview-pdf').classList.add('hidden');
-  document.getElementById('receiptFile').value = '';
-  document.getElementById('removeFileInput').value = '1'; // mark file to remove
-}
+  if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+      const f = e.target.files[0];
+      if (!f) return;
+      handlePreview(f);
+    });
+  }
 
-function addItemRow() {
-  const tbody = document.getElementById('item-rows');
-  const row = document.createElement('tr');
-  row.innerHTML = `
-    <td><input type="text" name="items[name][]" class="input input-sm input-bordered w-full rounded-lg" placeholder="Nama item"></td>
-    <td><input type="number" step="0.01" name="items[amount][]" class="input input-sm input-bordered w-full rounded-lg item-amount" placeholder="0.00" oninput="updateTotal()"></td>
-    <td class="text-center align-middle">
-      <div class="flex justify-center items-center h-full">
-        <button type="button" class="btn btn-xs btn-error flex items-center justify-center" onclick="removeRow(this)">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-      </div>
-    </td>
-  `;
-  tbody.appendChild(row);
-}
+  function handlePreview(file) {
+    // tunjuk preview section, sembunyi panel upload
+    uploadActions.classList.add('hidden');
+    previewWrap.classList.remove('hidden');
+    removeFlag.value = '0';
 
-function removeRow(btn) {
-  btn.closest('tr').remove();
-  updateTotal();
-}
+    // reset
+    if (imgPreview) { imgPreview.classList.add('hidden'); }
+    if (pdfPreview) { pdfPreview.classList.add('hidden'); while (pdfPreview.firstChild) pdfPreview.removeChild(pdfPreview.firstChild); }
 
-function updateTotal() {
-  let total = 0;
-  document.querySelectorAll('.item-amount').forEach(input => {
-    total += parseFloat(input.value) || 0;
-  });
-  document.getElementById('total-amount').textContent = total.toFixed(2);
-}
+    if (file.type.includes('pdf')) {
+      // PDF: tunjuk ikon + button view tab baru (blob url)
+      pdfPreview.classList.remove('hidden');
+      const icon = document.createElement('i');
+      icon.className = 'fa-solid fa-file-pdf text-5xl text-error mb-2 block';
+      const view = document.createElement('a');
+      view.target = '_blank';
+      view.className = 'btn btn-xs btn-outline btn-primary mt-2';
+      view.textContent = 'Lihat PDF';
+      view.href = URL.createObjectURL(file);
+      pdfPreview.appendChild(icon);
+      pdfPreview.appendChild(view);
+    } else {
+      // IMAGE: read & show
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (imgPreview) {
+          imgPreview.src = ev.target.result;
+          imgPreview.classList.remove('hidden');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // ––– Delete –––
+  if (btnRemove) {
+    btnRemove.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation(); // pastikan tak trigger apa-apa click lain
+
+      // sembunyi preview, aktifkan balik panel upload
+      previewWrap.classList.add('hidden');
+      uploadActions.classList.remove('hidden');
+
+      // kosongkan input file & set flag untuk controller
+      if (fileInput) fileInput.value = '';
+      removeFlag.value = '1';
+    });
+  }
+
+  // ––– Items –––
+  const btnAddItem = document.getElementById('btn-add-item');
+  if (btnAddItem) {
+    btnAddItem.addEventListener('click', function() {
+      const tbody = document.getElementById('item-rows');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" name="items[name][]" class="input input-sm input-bordered w-full rounded-lg" placeholder="Nama item"></td>
+        <td><input type="number" step="0.01" name="items[amount][]" class="input input-sm input-bordered w-full rounded-lg item-amount" placeholder="0.00"></td>
+        <td class="text-center align-middle">
+          <button type="button" class="btn btn-xs btn-error" data-action="remove-row">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      recalcTotal();
+    });
+
+    document.addEventListener('input', function(e) {
+      if (e.target && e.target.classList.contains('item-amount')) recalcTotal();
+    });
+
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('[data-action="remove-row"]')) {
+        e.preventDefault();
+        e.target.closest('tr').remove();
+        recalcTotal();
+      }
+    });
+  }
+
+  function recalcTotal() {
+    let total = 0;
+    document.querySelectorAll('.item-amount').forEach(i => total += parseFloat(i.value) || 0);
+    const target = document.getElementById('total-amount');
+    if (target) target.textContent = total.toFixed(2);
+  }
+})();
 </script>
+<style>
+  /* Sembunyi butang file default */
+  /* #receiptFile {
+    display: none;
+  } */
+
+</style>
