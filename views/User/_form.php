@@ -24,7 +24,7 @@ use yii\widgets\ActiveForm;
 <?php $form = ActiveForm::begin([
     'id' => 'user-form',
     'options' => [
-      'class' => 'space-y-4'
+      'class' => 'space-y-1'
       ],
     'fieldConfig' => [
         'template' => "{label}\n{input}\n{error}",
@@ -35,7 +35,7 @@ use yii\widgets\ActiveForm;
 
   <!-- 🔹 Section 1: Maklumat Peribadi -->
   <div>
-    <h2 class="text-lg font-semibold text-base-content/80 mb-4 border-b border-base-300 pb-2">
+    <h2 class="text-lg font-semibold text-base-content/80 mb-4 border-b border-base-300 pb-1">
       <i class="fa-solid fa-user text-primary"></i> Maklumat Peribadi
     </h2>
 

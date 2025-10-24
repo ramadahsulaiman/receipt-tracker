@@ -5,10 +5,37 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var app\models\Receipt $model */
 
-$this->title = 'Resit: ' . Html::encode($model->category->name);
+$this->title = 'Resit: ' . Html::encode($model->category->name ?? 'Kategori Tidak Diketahui');
 $this->params['breadcrumbs'][] = ['label' => 'Resit', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<style>
+    .receipt-view table td, .receipt-view table th {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+    .badge i {
+    font-size: 0.75rem !important;
+    vertical-align: middle;
+    }
+    .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 70px;
+    }
+    @media (max-width: 768px) {
+    .table td, .table th {
+        font-size: 13px !important;
+    }
+    .badge {
+        padding: 0.25rem 0.4rem !important;
+        font-size: 11px !important;
+    }
+    }
+    </style>
 
 <div class="receipt-view p-6 bg-base-100 rounded-2xl shadow-lg">
     <!-- 🔹 Header -->
@@ -29,27 +56,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= Yii::$app->formatter->asDatetime($model->updated_at, 'php:d M Y, h:i A') ?>
                 </p>
             <?php endif; ?>
-        </div>
-
-        <div class="flex gap-2">
-            <?= Html::a('<i class="fa-solid fa-pen-to-square"></i> Kemaskini', 
-                ['update', 'id' => $model->id], 
-                ['class' => 'btn btn-sm btn-primary text-white']) ?>
-
-            <?= Html::a('<i class="fa-solid fa-trash"></i> Padam', 
-                ['delete', 'id' => $model->id], 
-                [
-                    'class' => 'btn btn-sm btn-outline btn-error',
-                    'data' => [
-                        'confirm' => 'Adakah anda pasti mahu memadam resit ini?',
-                        'method' => 'post',
-                    ],
-                ]) ?>
-
-            <a href="<?= Yii::$app->urlManager->createUrl(['receipt/index']) ?>" 
-               class="btn btn-outline btn-neutral">
-                <i class="fa-solid fa-list"></i> Senarai Resit
-            </a>
         </div>
     </div>
 
@@ -116,10 +122,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class="bg-base-200 font-semibold text-base-content px-4 py-2 border-r border-base-300">Status</td>
                         <td class="px-4 py-2">
                             <?php
-                            $color = match($model->status) {
-                                'Saved' => 'badge-primary',
-                                'Draft' => 'badge-warning',
-                                default => 'badge-neutral'
+                            $color = match (strtolower($model->status)) {
+                                'saved' => 'badge-success',
+                                'draft' => 'badge-warning',
+                                'pending' => 'badge-info',
+                                'deleted' => 'badge-error',
+                                default => 'badge-neutral',
                             };
                             ?>
                             <span class="badge <?= $color ?> badge-md"><?= Html::encode($model->status) ?></span>
@@ -154,7 +162,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </tbody>
                     <tfoot>
                         <tr class="bg-base-300 font-bold text-base-content text-lg">
-                            <td class="w-1/2 text-right px-4 py-2">Jumlah Keseluruhan:</td>
+                            <td class="w-1/2 text-base-content px-4 py-2">Jumlah Keseluruhan:</td>
                             <td class="w-1/4 px-4 py-2 text-bold">RM <?= Yii::$app->formatter->asDecimal($model->amount, 2) ?></td>
                         </tr>
                     </tfoot>
@@ -162,4 +170,30 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     <?php endif; ?>
+
+
+    <div class="flex justify-center gap-3 py-6">
+    <?= Html::a('<i class="fa-solid fa-pen-to-square"></i> Kemaskini',
+        ['update', 'id' => $model->id],
+        [
+            'class' => 'flex items-center justify-center gap-2 bg-blue-200 text-blue-800 hover:bg-blue-300 border-none px-3 h-9 rounded-lg font-semibold text-sm tracking-wide transition-all duration-300 shadow-sm hover:shadow-md',
+        ]) ?>
+
+    <?= Html::a('<i class="fa-solid fa-trash"></i> Padam',
+        ['delete', 'id' => $model->id],
+        [
+            'class' => 'flex items-center justify-center gap-2 bg-red-200 text-red-800 hover:bg-red-300 border-none px-3 h-9 rounded-lg font-semibold text-sm tracking-wide transition-all duration-300 shadow-sm hover:shadow-md',
+            'data' => [
+                'confirm' => 'Adakah anda pasti mahu memadam resit ini?',
+                'method' => 'post',
+            ],
+        ]) ?>
+
+    <a href="<?= Yii::$app->urlManager->createUrl(['receipt/index']) ?>"
+       class="flex items-center justify-center gap-2 bg-yellow-200 text-black hover:bg-yellow-300 border-none px-3 h-9 rounded-lg font-semibold text-sm tracking-wide transition-all duration-300 shadow-sm hover:shadow-md">
+        <i class="fa-solid fa-list"></i> Senarai Resit
+    </a>
 </div>
+
+</div>
+

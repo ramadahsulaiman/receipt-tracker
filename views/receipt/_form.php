@@ -7,7 +7,6 @@ use yii\widgets\ActiveForm;
 /** @var app\models\Receipt $model */
 /** @var yii\widgets\ActiveForm $form */
 ?>
-
 <div class="receipt-form">
 <?php $form = ActiveForm::begin([
     'id' => 'receipt-form',
@@ -20,11 +19,7 @@ use yii\widgets\ActiveForm;
 ]); ?>
 
 <!-- 🔹 Upload Receipt -->
-<div class="mt-2">
-  <h2 class="text-lg font-semibold text-base-content mb-4 border-b border-base-300">
-    <i class="fa-solid fa-cloud-arrow-up text-primary"></i> Muat Naik Resit
-  </h2>
-
+<div class="mt-1">
   <div class="border border-dashed border-base-300 rounded-xl p-6 bg-base-100/70">
     <!-- Kawasan BUTANG upload (tiada overlay) -->
     <div id="upload-actions" class="<?= $model->cloud_url ? 'hidden' : '' ?> text-center cursor-pointer flex justify-center flex-col items-center">
@@ -32,19 +27,17 @@ use yii\widgets\ActiveForm;
       <button type="button" 
       class="btn bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-300 btn-sm flex items-center gap-2 mt-3 rounded-xl transition-all shadow-sm hover:shadow-md"
       id="btn-choose-file">
-        <i class="fa-solid fa-upload"></i> Pilih Fail
+        <i class="fa-solid fa-upload"></i> Muat Naik Resit
       </button>
-      <p class="text-xs mt-2 text-base-content/70">Sokongan: PDF / imej. Anda juga boleh seret & lepas terus ke butang ini.</p>
+      <p class="text-xs mt-2 text-base-content">Support format PDF dan gambar je. Boleh upload atau nak drag & drop kat sini.</p>
     </div>
 
     <!-- Paparan PREVIEW (terpisah dari butang upload) -->
-    <div id="file-preview" class="mt-5 text-center <?= $model->cloud_url ? '' : 'hidden' ?>">
+    <div id="file-preview" class="mt-1 text-center <?= $model->cloud_url ? '' : 'hidden' ?>">
       <?php if (!empty($model->cloud_url) && strpos($model->cloud_url, '.pdf') !== false): ?>
         <div id="preview-pdf">
-          <i class="fa-solid fa-file-pdf text-5xl text-error mb-2"></i>
           <p class="text-sm text-base-content/70">Fail PDF sedia ada</p>
-          <a href="<?= Html::encode($model->cloud_url) ?>" target="_blank" class="btn btn-xs btn-outline btn-primary mt-2">
-            <i class="fa-solid fa-eye"></i> Lihat PDF
+          <a href="<?= Html::encode($model->cloud_url) ?>" target="_blank" >
           </a>
         </div>
         <img id="preview-image" class="hidden">
@@ -58,7 +51,6 @@ use yii\widgets\ActiveForm;
 
       <!-- Flag untuk controller -->
       <input type="hidden" id="removeFileInput" name="removeFile" value="0">
-
       <div class="mt-3 flex justify-center">
         <button type="button" id="btn-remove-file"
           class="btn bg-red-100 text-red-700 hover:bg-red-200 border border-red-300 btn-sm flex items-center gap-2 mt-3 rounded-xl transition-all">
@@ -75,8 +67,12 @@ use yii\widgets\ActiveForm;
   <label class="label"><span class="label-text font-semibold">Tarikh Resit</span></label>
   <div class="relative">
     <i class="fa-solid fa-calendar-day absolute left-3 top-3 text-base-content"></i>
-    <?= $form->field($model, 'spent_at', ['options' => ['class' => 'm-0']])
-        ->input('date', ['class' => 'input input-bordered w-full rounded-lg pl-10'])
+    <?= $form->field($model, 'spent_at', [
+      'options' => ['class' => 'm-0']]
+      )
+        ->input('date', [
+          'class' => 'input input-bordered w-full rounded-lg pl-10']
+          )
         ->label(false) ?>
   </div>
 </div>
@@ -126,9 +122,9 @@ use yii\widgets\ActiveForm;
     <table class="table w-full border border-base-300 rounded-lg text-base-content text-sm" id="items-table">
       <thead>
         <tr class="bg-base-200">
-          <th class="w-1/2 px-3 py-2">Item</th>
-          <th class="w-1/4 px-3 py-2">Jumlah (RM)</th>
-          <th class="w-1/6 px-3 py-2">Tindakan</th>
+          <th class="w-1/2 px-3 py-2 text-sm text-base-content/90">Item</th>
+          <th class="w-1/4 px-3 py-2 text-sm text-base-content/90">Jumlah (RM)</th>
+          <th class="w-1/6 px-3 py-2 text-sm text-center text-base-content/90">Tindakan</th>
         </tr>
       </thead>
       <tbody id="item-rows"></tbody>
@@ -136,7 +132,7 @@ use yii\widgets\ActiveForm;
   </div>
 
   <div class="mt-6">
-    <button type="button" class="btn btn-sm btn-outline btn-primary text-white" id="btn-add-item">
+    <button type="button" class="btn btn-sm flex items-center justify-center bg-green-200 text-black hover:bg-green-300 border-none px-2 h-5 rounded-xl font-semibold tracking-wide transition-all duration-300 shadow-sm hover:shadow-md" id="btn-add-item">
       <i class="fa-solid fa-plus"></i> Tambah Item
     </button>
   </div>
@@ -147,17 +143,17 @@ use yii\widgets\ActiveForm;
 </div>
 
 <!-- 🔹 Save Buttons -->
-<div class="pt-6 flex justify-between">
-  <label class="label cursor-pointer gap-2">
+<div class="flex justify-between">
+  <label class="label cursor-pointer gap-1">
     <input type="checkbox" name="Receipt[status]" value="Draft" class="checkbox checkbox-sm">
     <span class="label-text">Simpan sebagai Draf</span>
   </label>
 
-  <button type="submit" name="action" value="save" class="btn btn-primary text-white">
-    <i class="fa-solid fa-floppy-disk"></i> Simpan Resit
-  </button>
-</div>
 
+</div>
+  <?= $this->render('../layouts/_formButtons', [
+      'saveLabel' => '<i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Resit',
+  ]) ?>
 <?php ActiveForm::end(); ?>
 </div>
 
@@ -216,10 +212,10 @@ use yii\widgets\ActiveForm;
       // PDF: tunjuk ikon + button view tab baru (blob url)
       pdfPreview.classList.remove('hidden');
       const icon = document.createElement('i');
-      icon.className = 'fa-solid fa-file-pdf text-5xl text-error mb-2 block';
+      icon.className = 'fa-solid fa-file-lines text-5xl text-error mb-2 block';
       const view = document.createElement('a');
       view.target = '_blank';
-      view.className = 'btn btn-xs btn-outline btn-primary mt-2';
+      view.className = 'btn btn-xs text-sm text-primary';
       view.textContent = 'Lihat PDF';
       view.href = URL.createObjectURL(file);
       pdfPreview.appendChild(icon);

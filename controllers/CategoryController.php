@@ -1,7 +1,7 @@
 <?php
 
 namespace app\controllers;
-
+use Yii;
 use app\models\Category;
 use app\models\CategorySearch;
 use yii\web\Controller;
@@ -67,23 +67,29 @@ class CategoryController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate()
-    {
-        $this->layout = 'blank-content';
-        $model = new Category();
+public function actionCreate()
+{
+    $this->layout = 'blank-content';
+    $model = new \app\models\Category();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
+    if (Yii::$app->request->isPost) {
+        if ($model->load(Yii::$app->request->post())) {
+            $model->user_id = Yii::$app->user->id ?? 1; // fallback if not logged in
+
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Kategori berjaya disimpan.');
                 return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                echo "<pre>"; print_r($model->getErrors()); die("❌ Validation failed");
             }
-        } else {
-            $model->loadDefaultValues();
         }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
     }
+
+    return $this->render('create', [
+        'model' => $model,
+    ]);
+}
+
 
     /**
      * Updates an existing Category model.
@@ -116,6 +122,7 @@ class CategoryController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+        Yii::$app->session->setFlash('success', 'Kategori telah dipadam.');
 
         return $this->redirect(['index']);
     }

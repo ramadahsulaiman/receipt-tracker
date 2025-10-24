@@ -49,8 +49,8 @@ class ReceiptItem extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'receipt_id' => 'Receipt ID',
-            'name' => 'Name',
-            'amount' => 'Amount',
+            'name' => 'Nama Item',
+            'amount' => 'Jumlah (RM)',
         ];
     }
 

@@ -56,7 +56,7 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:wght@4
     </div>
 
     <!-- 🔹 Create Form Section -->
-    <div class="bg-white rounded-xl p-3 md:p-3">
+      <div class="bg-base-100/80 backdrop-blur-md border border-base-300 rounded-xl shadow-md p-6">
         <?= $this->render('_form', [
             'model' => $model,
             'category' => $category,

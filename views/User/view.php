@@ -27,13 +27,12 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:wght@4
   }
 </style>
 
-<div class="min-h-screen bg-base-200 text-base-content flex justify-center py-10 px-4">
-  <div class="w-full max-w-5xl bg-base-100 shadow-xl rounded-2xl border border-base-300 overflow-hidden">
+<div class="user-update p-3 bg-base-100 rounded-2xl shadow-lg">
 
-    <!-- Header -->
+<!-- Header -->
     <div class="bg-gradient-to-r from-primary to-secondary text-base-100 p-8 text-center relative">
       <div class="avatar">
-        <div class="w-28 h-28 rounded-full ring ring-offset-2 ring-base-100 mx-auto shadow-lg">
+        <div class="w-20 h-20 rounded-full ring ring-offset-2 ring-base-100 mx-auto shadow-lg">
           <img src="https://ui-avatars.com/api/?name=<?= urlencode($model->full_name ?: $model->username) ?>&background=random&color=fff" alt="Profile Avatar">
         </div>
       </div>
@@ -48,7 +47,7 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:wght@4
     </div>
 
     <!-- Body -->
-    <div class="p-8 space-y-8">
+    <div class="p-10 space-y-8">
 
       <!-- 🔹 Section 1: Maklumat Peribadi -->
       <div>
@@ -56,12 +55,12 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:wght@4
           <i class="fa-solid fa-user text-primary"></i> Maklumat Peribadi
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><span class="font-semibold text-base-content/70">Nama Penuh:</span><br><?= Html::encode($model->full_name) ?></div>
-          <div><span class="font-semibold text-base-content/70">Nama Pengguna:</span><br><?= Html::encode($model->username) ?></div>
-          <div><span class="font-semibold text-base-content/70">Emel:</span><br><?= Html::encode($model->email) ?></div>
-          <div><span class="font-semibold text-base-content/70">No. Telefon:</span><br><?= Html::encode($model->phone_number) ?></div>
-          <div><span class="font-semibold text-base-content/70">No. Kad Pengenalan:</span><br><?= Html::encode($model->ic_number) ?></div>
-          <div class="md:col-span-2"><span class="font-semibold text-base-content/70">Alamat:</span><br><?= nl2br(Html::encode($model->address)) ?></div>
+          <div><span class="font-semibold text-base-content">Nama Penuh:</span><br><?= Html::encode($model->full_name) ?></div>
+          <div><span class="font-semibold text-base-content">Nama Pengguna:</span><br><?= Html::encode($model->username) ?></div>
+          <div><span class="font-semibold text-base-content">Emel:</span><br><?= Html::encode($model->email) ?></div>
+          <div><span class="font-semibold text-base-content">No. Telefon:</span><br><?= Html::encode($model->phone_number) ?></div>
+          <div><span class="font-semibold text-base-content">No. Kad Pengenalan:</span><br><?= Html::encode($model->ic_number) ?></div>
+          <div class="md:col-span-2"><span class="font-semibold text-base-content">Alamat:</span><br><?= nl2br(Html::encode($model->address)) ?></div>
         </div>
       </div>
 
@@ -71,31 +70,31 @@ $this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:wght@4
           <i class="fa-solid fa-briefcase text-secondary"></i> Maklumat Pekerjaan
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><span class="font-semibold text-base-content/70">Nama Majikan:</span><br><?= Html::encode($model->employer_name) ?></div>
-          <div><span class="font-semibold text-base-content/70">No. Majikan:</span><br><?= Html::encode($model->employer_number) ?></div>
+          <div><span class="font-semibold text-base-content">Nama Majikan:</span><br><?= Html::encode($model->employer_name) ?></div>
+          <div><span class="font-semibold text-base-content">No. Majikan:</span><br><?= Html::encode($model->employer_number) ?></div>
         </div>
       </div>
 
       <!-- 🔹 Section 3: Maklumat Kewangan -->
       <div>
-        <h2 class="text-lg font-semibold text-base-content/80 mb-4 border-b border-base-300 pb-2">
+        <h2 class="text-lg font-semibold text-base-content mb-4 border-b border-base-300 pb-2">
           <i class="fa-solid fa-piggy-bank text-primary"></i> Maklumat Kewangan
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><span class="font-semibold text-base-content/70">Nama Bank:</span><br><?= Html::encode($model->bank_name) ?></div>
-          <div><span class="font-semibold text-base-content/70">No. Akaun Bank:</span><br><?= Html::encode($model->bank_account) ?></div>
-          <div class="md:col-span-2"><span class="font-semibold text-base-content/70">No. Cukai:</span><br><?= Html::encode($model->tax_number) ?></div>
+          <div><span class="font-semibold text-base-content">Nama Bank:</span><br><?= Html::encode($model->bank_name) ?></div>
+          <div><span class="font-semibold text-base-content">No. Akaun Bank:</span><br><?= Html::encode($model->bank_account) ?></div>
+          <div class="md:col-span-2"><span class="font-semibold text-base-content">No. Cukai:</span><br><?= Html::encode($model->tax_number) ?></div>
         </div>
       </div>
 
       <!-- 🔹 Section 4: Status Keluarga -->
       <div>
-        <h2 class="text-lg font-semibold text-base-content/80 mb-4 border-b border-base-300 pb-2">
+        <h2 class="text-lg font-semibold text-base-content mb-4 border-b border-base-300 pb-2">
           <i class="fa-solid fa-children text-pink-500"></i> Status Keluarga
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><span class="font-semibold text-base-content/70">Status Perkahwinan:</span><br><?= Html::encode($model->marital_status ?: '-') ?></div>
-          <div><span class="font-semibold text-base-content/70">Bilangan Tanggungan:</span><br><?= Html::encode($model->dependents ?: 0) ?></div>
+          <div><span class="font-semibold text-base-content">Status Perkahwinan:</span><br><?= Html::encode($model->marital_status ?: '-') ?></div>
+          <div><span class="font-semibold text-base-content">Bilangan Tanggungan:</span><br><?= Html::encode($model->dependents ?: 0) ?></div>
         </div>
       </div>
     </div>

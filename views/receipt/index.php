@@ -2,6 +2,8 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\grid\ActionColumn;
+
 
 /** @var yii\web\View $this */
 /** @var app\models\ReceiptSearch $searchModel */
@@ -13,10 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <head>
   <style>
-    .table td, .table th {
-      padding-top: 0.4rem !important;
-      padding-bottom: 0.4rem !important;
-    }
+
     .btn-circle i {
         font-size: 0.8rem !important;
         }
@@ -51,43 +50,44 @@ $this->params['breadcrumbs'][] = $this->title;
   </style>
 </head>
 
-<div class="min-h-screen bg-base-200 text-base-content py-10 px-4">
-  <div class="max-w-6xl mx-auto bg-base-100 shadow-xl rounded-2xl border border-base-300 overflow-hidden">
+<div class="receipt-index p-6 bg-base-100 rounded-2xl shadow-lg">
 
     <!-- Header -->
-    <div class="bg-gradient-to-r from-primary to-secondary text-base-100 p-8 flex justify-between items-center">
+    <div class="bg-gradient-to-r from-primary to-secondary text-base-100 p-4 flex justify-between items-center rounded-t-2xl">
       <div>
         <h1 class="text-2xl font-bold"><?= Html::encode($this->title) ?></h1>
         <p class="opacity-80 text-sm mt-1">Semak dan urus resit yang telah disimpan</p>
       </div>
       <?= Html::a('<i class="fa-solid fa-circle-plus"></i> Tambah Resit', ['create'], [
-          'class' => 'btn btn-sm btn-light bg-white text-primary font-semibold',
+          'class' => 'btn btn-sm bg-white text-primary font-semibold',
       ]) ?>
     </div>
 
     <!-- Filters and Table -->
-    <div class="p-6 overflow-x-auto">
+    <div class="p-2 bg-white rounded-2xl overflow-x-auto">
 
-      <p class="mb-4 text-right">
+      <p class="mb-3 text-right overflow-x-auto">
         <?= Html::a('<i class="fa-solid fa-rotate-right"></i> Reset Carian', ['index'], [
-            'class' => 'btn btn-sm btn-outline btn-secondary',
+            'class' => 'btn btn-sm btn-outline btn-secondary text-white font-semibold',
         ]) ?>
       </p>
-
+      <div class="overflow-x-auto">
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
-            'summary' => false,
-            'tableOptions' => ['class' => 'table w-full text-sm border border-base-300 rounded-lg'],
+            'tableOptions' => ['class' => 'table w-full text-sm text-base-content'],
+            'summaryOptions' => ['class' => 'px-4 py-2 text-xs text-base-content/60'],
+           
             'columns' => [
-                ['class' => 'yii\grid\SerialColumn', 'header' => 'No.'],
+                ['class' => 'yii\grid\SerialColumn', 
+                    'headerOptions' => ['class' => 'bg-base-200 text-base-content/70 uppercase text-xs text-center'],
+                    'contentOptions' => ['class' => 'font-semibold text-center'],   
+                ],
 
                 [
                     'attribute' => 'vendor',
-                    'label' => 'Vendor / Kedai',
                     'filterInputOptions' => [
                         'class' => 'input input-bordered input-sm w-full',
-                        'placeholder' => 'Cari vendor...',
                     ],
                     'value' => fn($model) => Html::encode($model->vendor ?: '-'),
                 ],
@@ -99,6 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'input input-bordered input-sm w-full',
                     ],
                     'value' => fn($model) => Yii::$app->formatter->asDate($model->spent_at, 'php:d M Y'),
+                    'contentOptions' => ['class' => 'text-center align-middle'],
                 ],
                 [
                     'attribute' => 'amount',
@@ -107,13 +108,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     'contentOptions' => ['class' => 'text-right font-semibold'],
                     'filterInputOptions' => [
                         'class' => 'input input-bordered input-sm w-full',
-                        'placeholder' => 'RM ...',
                     ],
+                    'contentOptions' => ['class' => 'text-center align-middle'],
+
                 ],
                 [
                     'attribute' => 'category_id',
                     'label' => 'Kategori',
                     'format' => 'raw',
+                    'contentOptions' => ['class' => 'text-center align-middle'],
                     'value' => fn($model) =>
                         $model->category
                             ? "<span class='badge badge-outline badge-primary px-3 py-2 text-xs font-semibold whitespace-nowrap'>"
@@ -153,6 +156,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'Deleted' => 'Deleted',
                     ],
                     'filterInputOptions' => ['class' => 'select select-bordered select-sm w-full'],
+                    'contentOptions' => ['class' => 'text-center align-middle'],
                 ],
                 [
                     'class' => 'yii\grid\ActionColumn',
@@ -192,7 +196,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ],
         ]) ?>
-
+    </div>
     </div>
   </div>
 </div>

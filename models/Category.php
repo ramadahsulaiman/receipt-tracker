@@ -41,7 +41,7 @@ class Category extends \yii\db\ActiveRecord
             [['is_tax_claimable'], 'default', 'value' => 0],
             [['max_deduction'], 'default', 'value' => 0.00],
             [['user_id', 'name'], 'required'],
-            [['user_id', 'is_tax_claimable'], 'integer'],
+            [['user_id', 'is_tax_claimable','active'], 'integer'],
             [['max_deduction'], 'number'],
             [['description'], 'string'],
             [['created_at', 'updated_at'], 'safe'],
@@ -58,12 +58,12 @@ class Category extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'name' => 'Name',
-            'is_tax_claimable' => 'Is Tax Claimable',
-            'max_deduction' => 'Max Deduction',
-            'description' => 'Description',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'name' => 'Nama Kategori',
+            'is_tax_claimable' => 'Boleh claim?',
+            'max_deduction' => 'Max. Penolakan',
+            'description' => 'Keterangan',
+            'created_at' => 'Dicipta pada',
+            'updated_at' => 'Kemaskini pada',
         ];
     }
 

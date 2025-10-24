@@ -51,7 +51,7 @@ class ReceiptController extends Controller
         $model->user_id = Yii::$app->user->id ?? 1; // fallback if not logged in
 
         $category = \yii\helpers\ArrayHelper::map(
-            \app\models\Category::find()->orderBy(['name' => SORT_ASC])->all(),
+            \app\models\Category::find()->where(['active' => 1])->orderBy(['name' => SORT_ASC])->all(),
             'id',
             'name'
         );
@@ -74,6 +74,15 @@ class ReceiptController extends Controller
         if (Yii::$app->request->isPost) {
             $model->load(Yii::$app->request->post());
             $model->receiptFile = UploadedFile::getInstanceByName('receiptFile');
+
+            // Logic to handle category status
+            if (isset($model->category_id)) {
+                $categoryModel = \app\models\Category::findOne($model->category_id);
+                if ($categoryModel) {
+                    $categoryModel->status = ($categoryModel->active) ? 1 : 0;
+                    $categoryModel->save(); 
+                }
+            }
 
             //capture the button submit save or as draft
             $action = Yii::$app->request->post('action');
@@ -147,19 +156,31 @@ class ReceiptController extends Controller
         $model = $this->findModel($id);
 
         // Ambil kategori dari table Category
-        $category = \yii\helpers\ArrayHelper::map(
-            \app\models\Category::find()->orderBy(['name' => SORT_ASC])->all(),
-            'id',
-            'name'
-        );
+        $categoryModel = \app\models\Category::findOne($model->category_id);
+        if ($categoryModel) {
+            // Check if the category is active or inactive
+            // and update the active status
+            $categoryModel->active = 0; // Set to inactive (0)
+            
+            if ($categoryModel->save()) {
+                Yii::$app->session->setFlash('success', 'Category updated to inactive.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Failed to update category.');
+            }
+        } else {
+            Yii::$app->session->setFlash('error', 'Category not found.');
+        }
 
         if (Yii::$app->request->isPost) {
             $model->load(Yii::$app->request->post());
             $model->receiptFile = UploadedFile::getInstanceByName('receiptFile');
 
-            if ($model->status !== 'Draft') {
-                $model->status = 'Saved';
-            }
+            $postReceipt = Yii::$app->request->post('Receipt', []);
+            $statusCheckbox = $postReceipt['status'] ?? null;
+
+            $model->status = ($statusCheckbox === 'Draft') ? 'Draft' : 'Saved';
+
+            // Upload to Cloudinary jika ada fail baru
 
             if ($model->receiptFile) {
                 $model->uploadToCloudinary();
