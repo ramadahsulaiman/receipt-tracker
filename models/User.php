@@ -5,6 +5,10 @@ namespace app\models;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use app\models\Category;
+use app\models\Receipt;
+use app\models\TaxYearSummary;
+
 
 /**
  * This is the model class for table "user".
@@ -61,19 +65,24 @@ class User extends ActiveRecord implements IdentityInterface
             [['auth_key', 'ic_number', 'tax_number', 'phone_number', 'address', 'employer_name', 'employer_number', 'bank_name', 'bank_account'], 'default', 'value' => null],
             [['marital_status'], 'default', 'value' => 'single'],
             [['dependents'], 'default', 'value' => 0],
-            [['username','password', 'password_hash', 'full_name', 'email'], 'required'],
-            [['address', 'marital_status','password'], 'string'],
-            [['dependents'], 'integer'],
-            [['created_at', 'updated_at'], 'safe'],
+            [['address', 'marital_status','password','bank_name'], 'string'],
+            [['dependents','ic_number', 'phone_number', 'bank_account'], 'integer', 'message' => 'Hanya nombor sahaja dibenarkan.'],
             [['username', 'password_hash', 'full_name', 'email', 'employer_name'], 'string', 'max' => 255],
             [['auth_key'], 'string', 'max' => 32],
-            [['ic_number', 'phone_number'], 'string', 'max' => 20],
-            [['tax_number', 'employer_number', 'bank_account'], 'string', 'max' => 50],
-            [['bank_name'], 'string', 'max' => 100],
+            [['tax_number', 'employer_number'], 'string', 'max' => 50],
             ['marital_status', 'in', 'range' => array_keys(self::optsMaritalStatus())],
+            [['created_at', 'updated_at'], 'safe'],
+
             [['username'], 'unique'],
             [['email'], 'unique'],
             [['tax_number'], 'unique'],
+
+            [['username', 'password_hash', 'full_name', 'email'], 'required'],
+
+            //password is required on create only
+            [['password'], 'required', 'on' => 'create'],
+
+
         ];
     }
 
@@ -293,9 +302,21 @@ class User extends ActiveRecord implements IdentityInterface
             if ($this->isNewRecord && empty($this->auth_key)) {
                 $this->generateAuthKey();
             }
+            // Hash password jika ada password baru diberikan
+            if (!empty($this->password)) {
+                $this->setPassword($this->password);
+            }
             return true;
         }
         return false;
     }
+
+    public function beforeValidate()
+{
+    if ($this->isNewRecord) {
+        $this->hidden_field = 'default_value';
+    }
+    return parent::beforeValidate();
+}
 
 }

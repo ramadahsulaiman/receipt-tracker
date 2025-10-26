@@ -2,6 +2,16 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use app\models\User;
+use yii\helpers\ArrayHelper;
+use yii\web\View;
+use yii\jui\DatePicker;
+use yii\bootstrap4\Modal;
+use app\assets\FontAwesomeAsset;
+use yii\helpers\Url;
+use yii\web\JsExpression;
+use yii\bootstrap4\BootstrapAsset;
+use yii\bootstrap4\ActiveField;
 
 /** @var yii\web\View $this */
 /** @var app\models\User $model */
@@ -76,7 +86,11 @@ use yii\widgets\ActiveForm;
         <div class="relative">
           <i class="fa-solid fa-phone absolute left-3 top-3 text-base-content/50"></i>
           <?= $form->field($model, 'phone_number', ['options' => ['class' => 'm-0']])
-              ->textInput(['maxlength' => true, 'class' => 'input input-bordered w-full rounded-lg pl-10'])
+              ->textInput(['maxlength' => true, 
+              'class' => 'input input-bordered w-full rounded-lg pl-10 number-only',
+              'pattern' => '[0-9]*',
+              'inputmode' => 'numeric',
+              ])
               ->label(false) ?>
         </div>
       </div>
@@ -86,7 +100,7 @@ use yii\widgets\ActiveForm;
         <div class="relative">
           <i class="fa-solid fa-id-badge absolute left-3 top-3 text-base-content/50"></i>
           <?= $form->field($model, 'ic_number', ['options' => ['class' => 'm-0']])
-              ->textInput(['maxlength' => true, 'class' => 'input input-bordered w-full rounded-lg pl-10'])
+              ->textInput(['maxlength' => true, 'class' => 'input input-bordered w-full rounded-lg pl-10 '])
               ->label(false) ?>
         </div>
       </div>
@@ -158,7 +172,7 @@ use yii\widgets\ActiveForm;
         <div class="relative">
           <i class="fa-solid fa-credit-card absolute left-3 top-3 text-base-content/50"></i>
           <?= $form->field($model, 'bank_account', ['options' => ['class' => 'm-0']])
-              ->textInput(['maxlength' => true, 'class' => 'input input-bordered w-full rounded-lg pl-10'])
+              ->textInput(['maxlength' => true, 'class' => 'input input-bordered w-full rounded-lg pl-10 number-only'])
               ->label(false) ?>
         </div>
       </div>
@@ -219,3 +233,17 @@ use yii\widgets\ActiveForm;
 <?php ActiveForm::end(); ?>
 
 </div>
+
+<!-- Javascript untuk disable kan keystroke alphabet. hanya allow nombor sahaja di dalam field -->
+<!-- 
+<script>
+  // JavaScript to allow only numbers in fields with class 'number-only'
+  document.addEventListener('DOMContentLoaded', function() {
+    const numberOnlyFields = document.querySelectorAll('.number-only');
+    numberOnlyFields.forEach(function(field) {
+      field.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+      });
+    });
+  });
+</script> -->
