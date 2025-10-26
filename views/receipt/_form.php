@@ -71,7 +71,8 @@ use yii\widgets\ActiveForm;
       'options' => ['class' => 'm-0']]
       )
         ->input('date', [
-          'class' => 'input input-bordered w-full rounded-lg pl-10']
+          'class' => 'input input-bordered w-full rounded-lg pl-10 '
+          ]
           )
         ->label(false) ?>
   </div>
@@ -79,16 +80,16 @@ use yii\widgets\ActiveForm;
 
 <!-- 🔹 Kategori -->
 <div>
-  <h2 class="text-lg font-semibold text-base-content mb-3">
+  <h2 class="text-lg font-semibold text-base-content mb-2">
     <i class="fa-solid fa-tags text-secondary"></i> Kategori
   </h2>
   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
     <?php foreach ($category as $id => $label): ?>
-      <label class="flex items-center gap-1 p-2 bg-base-200 rounded-lg cursor-pointer hover:bg-base-300 transition shadow-sm">
+      <label class="flex items-center gap-1 p-2 bg-white text-black rounded-lg cursor-pointer hover:bg-base-400 transition shadow-md">
         <input type="radio"
                name="Receipt[category_id]"
                value="<?= $id ?>"
-               class="radio radio-primary"
+               class="radio radio-xs"
                <?= $model->category_id == $id ? 'checked' : '' ?>>
         <span class="text-sm font-medium"><?= Html::encode($label) ?></span>
       </label>
@@ -99,7 +100,10 @@ use yii\widgets\ActiveForm;
 <!-- 🔹 Vendor -->
 <div>
   <label class="label"><span class="label-text font-semibold">Vendor / Kedai</span></label>
-  <?= $form->field($model, 'vendor', ['options' => ['class' => 'm-0']])
+  <?= $form->field($model, 'vendor', [
+    'options' => [
+      'class' => 'm-0'
+      ]])
       ->textInput(['placeholder' => 'Contoh: Tesco, GrabFood, Watsons', 'class' => 'input input-bordered w-full'])
       ->label(false) ?>
 </div>

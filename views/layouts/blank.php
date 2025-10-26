@@ -9,6 +9,7 @@ use yii\helpers\Html;
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= Html::encode($this->title) ?></title>
+    <link rel="icon" href="<?= Yii::$app->request->baseUrl ?>/favicon.ico" type="image/x-icon">
 
     <!-- TailwindCSS + DaisyUI via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,6 +18,21 @@ use yii\helpers\Html;
 
     <?php $this->head() ?>
 </head>
+
+<?php
+// Register Google Font properly (Yii2 way)
+$this->registerCssFile('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet', [
+    'rel' => 'stylesheet',
+    'crossorigin' => 'anonymous',
+]);
+?>
+
+<style>
+    h1, p, th, td, span, div, body {
+    font-family: 'Andika', sans-serif;
+    /* letter-spacing: 0.px; */
+    }
+</style>
 
 <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-[#0f172a] via-[#111827] to-[#0b1020] text-base-content">
 <?php $this->beginBody() ?>
@@ -37,10 +53,9 @@ use yii\helpers\Html;
         </div>
         <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-40 text-base-content">
             <li><a onclick="setTheme('cupcake')">🧁 Cupcake</a></li>
-            <li><a onclick="setTheme('dracula')">🦇 Dracula</a></li>
             <li><a onclick="setTheme('pastel')">🖌 Pastel</a></li>
-            <li><a onclick="setTheme('emerald')">🌿 Emerald</a></li>
-            <li><a onclick="setTheme('light')">light</a></li>
+            <li><a onclick="setTheme('light')">☀️ Light</a></li>
+            <li><a onclick="setTheme('fantasy')">🦄 Fantasy</a></li>
         </ul>
       </div>
     </div>

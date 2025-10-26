@@ -38,8 +38,8 @@ $this->title = 'Receipt Tracker - Simple by Mada :)';
       <div class="flex items-center space-x-3">
           <span class="text-lg">
               Welcome,
-              <a href="<?= Url::to(['site/index']) ?>" class="link link-hover text-primary font-semibold">
-                  Yo! <?= Html::encode($user->username ?? $user->name ?? 'User') ?>
+              <a href="<?= Url::to(['site/index']) ?>" class="text-hover text-primary font-semibold">
+                  Hi! <?= Html::encode($user->username ?? $user->name ?? 'User') ?>
               </a>
           </span>
 

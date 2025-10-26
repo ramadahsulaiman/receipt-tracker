@@ -6,13 +6,11 @@ use yii\helpers\Url;
 $this->title = 'Create Account';
 ?>
 
-<div class="min-h-screen flex flex-col items-center justify-center bg-base-200 text-base-content px-6 py-12">
+<section class="min-h-screen flex flex-col items-center justify-center bg-white text-base-content px-6 py-12">
 
-  <!-- Soft Animated Glow Background -->
-  <div class="absolute inset-0 overflow-hidden -z-10">
-    <div class="absolute top-[-10rem] left-[-10rem] w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
-    <div class="absolute bottom-[-10rem] right-[-10rem] w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse"></div>
-  </div>
+  <!-- Glow Blobs (theme-aware glow using opacity) -->
+  <div class="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-primary/20 blur-3xl"></div>
+  <div class="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-secondary/20 blur-3xl"></div>
 
   <!-- Card -->
   <div class="card w-full max-w-md bg-base-100 shadow-2xl border border-base-300 animate-fadeIn">
@@ -33,7 +31,15 @@ $this->title = 'Create Account';
         <p class="text-sm text-base-content/70">Join <strong>Receipt Tracker</strong> — it’s free!</p>
       </div>
 
-      <?php $form = ActiveForm::begin(['options' => ['class' => 'space-y-4']]); ?>
+    <?php $form = ActiveForm::begin([
+        'id' => 'user-create',
+        'options' => ['enctype' => 'multipart/form-data', 'class' => 'space-y-4'],
+        'fieldConfig' => [
+            'template' => "{label}\n{input}\n{error}",
+            'labelOptions' => ['class' => 'font-medium text-base-content'],
+            'errorOptions' => ['class' => 'text-red-600 text-sm mt-1'],
+        ],
+    ]); ?>
 
       <!-- Full Name -->
       <div class="form-control">

@@ -155,21 +155,12 @@ class ReceiptController extends Controller
         $this->layout = 'blank-content';
         $model = $this->findModel($id);
 
-        // Ambil kategori dari table Category
-        $categoryModel = \app\models\Category::findOne($model->category_id);
-        if ($categoryModel) {
-            // Check if the category is active or inactive
-            // and update the active status
-            $categoryModel->active = 0; // Set to inactive (0)
-            
-            if ($categoryModel->save()) {
-                Yii::$app->session->setFlash('success', 'Category updated to inactive.');
-            } else {
-                Yii::$app->session->setFlash('error', 'Failed to update category.');
-            }
-        } else {
-            Yii::$app->session->setFlash('error', 'Category not found.');
-        }
+        // Fetch categories that are active (only those with 'active' = 1)
+        $category = \yii\helpers\ArrayHelper::map(
+            \app\models\Category::find()->where(['active' => 1])->orderBy(['name' => SORT_ASC])->all(),
+            'id',
+            'name'
+        );
 
         if (Yii::$app->request->isPost) {
             $model->load(Yii::$app->request->post());

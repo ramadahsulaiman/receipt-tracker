@@ -13,15 +13,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 // Register Google Font properly (Yii2 way)
-$this->registerCssFile('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet', [
+$this->registerCssFile('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet', [
     'rel' => 'stylesheet',
     'crossorigin' => 'anonymous',
 ]);
 ?>
 
 <style>
-    h1, p, th, td, span, div {
-    font-family: 'Spectral', sans-serif;
+    h1, p, th, td, span, div, body {
+    font-family: 'Andika', sans-serif;
     /* letter-spacing: 0.px; */
     }
 </style>

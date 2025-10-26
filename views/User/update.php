@@ -33,13 +33,6 @@ $this->params['breadcrumbs'][] = 'Kemaskini';
         ]) ?>
 
       </div>
-
-        <!-- 🟩 Action Buttons -->
-        <?= $this->render('../layouts/_formButtons', [
-            'cancelUrl' => ['/site/index'],
-            'saveLabel' => '<i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Perubahan',
-            'cancelLabel' => '<i class="fa-solid fa-rotate-left mr-2"></i> Kembali',
-        ]) ?>
       </div>
     </div>
   </div>

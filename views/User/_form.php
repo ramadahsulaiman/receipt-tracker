@@ -190,10 +190,10 @@ use yii\widgets\ActiveForm;
           <i class="fa-solid fa-ring absolute left-3 top-3 text-base-content/50"></i>
           <?= $form->field($model, 'marital_status', ['options' => ['class' => 'm-0']])
               ->dropDownList([
-                  'Bujang' => 'Bujang',
-                  'Berkahwin' => 'Berkahwin',
-                  'Duda' => 'Duda',
-                  'Janda' => 'Janda',
+                  'single' => 'Bujang',
+                  'married' => 'Berkahwin',
+                  'divorced' => 'Bercerai',
+                  'widowed' => 'Janda/Duda',
               ], ['prompt' => 'Pilih Status', 'class' => 'select select-bordered w-full rounded-lg pl-10'])
               ->label(false) ?>
         </div>
@@ -211,7 +211,11 @@ use yii\widgets\ActiveForm;
 
     </div>
   </div>
-
+        <!-- 🟩 Action Buttons -->
+        <?= $this->render('../layouts/_formButtons', [
+            'saveLabel' => '<i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Perubahan',
+            'cancelLabel' => '<i class="fa-solid fa-rotate-left mr-2"></i> Kembali',
+        ]) ?>
 <?php ActiveForm::end(); ?>
 
 </div>

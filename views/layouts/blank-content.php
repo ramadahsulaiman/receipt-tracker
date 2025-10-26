@@ -23,6 +23,16 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>" data-theme="light">
+
+<?php
+// Register Google Font properly (Yii2 way)
+$this->registerCssFile('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet', [
+    'rel' => 'stylesheet',
+    'crossorigin' => 'anonymous',
+]);
+?>
+
+
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -54,6 +64,12 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
       .menu li summary i {
         margin-right: 0.5rem;
       }
+
+      h1, p, th, td, span, div, body {
+      font-family: 'Andika', sans-serif;
+      /* letter-spacing: 0.px; */
+      }
+    
     </style>
 
     <?php $this->head() ?>
@@ -241,11 +257,10 @@ $username = Yii::$app->user->isGuest ? 'Guest' : Yii::$app->user->identity->user
           </svg>
     </div>
     <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-44 text-sm text-base-content">
-      <li><a onclick="setTheme('cupcake')">🧁 Cupcake</a></li>
-      <li><a onclick="setTheme('dracula')">🦇 Dracula</a></li>
-      <li><a onclick="setTheme('pastel')">🖌 Pastel</a></li>
-      <li><a onclick="setTheme('emerald')">🌿 Emerald</a></li>
-      <li><a onclick="setTheme('light')">light</a></li>
+            <li><a onclick="setTheme('cupcake')">🧁 Cupcake</a></li>
+            <li><a onclick="setTheme('pastel')">🖌 Pastel</a></li>
+            <li><a onclick="setTheme('light')">☀️ Light</a></li>
+            <li><a onclick="setTheme('fantasy')">🦄 Fantasy</a></li>
     </ul>
   </div>
 </div>
