@@ -70,7 +70,8 @@ class CategoryController extends Controller
 public function actionCreate()
 {
     $this->layout = 'blank-content';
-    $model = new \app\models\Category();
+    $model = new Category();
+    $model -> active = 1; // default value for active field
 
     if (Yii::$app->request->isPost) {
         if ($model->load(Yii::$app->request->post())) {

@@ -41,7 +41,7 @@ class Receipt extends \yii\db\ActiveRecord
     {
         return [
             [['category_id', 'vendor', 'notes', 'cloud_public_id', 'cloud_url'], 'default', 'value' => null],
-            [['currency'], 'default', 'value' => 'MYR'],
+            [['currency'], 'default', 'value' => 'RM'],
             [['user_id', 'amount', 'spent_at'], 'required'],
             [['user_id', 'category_id'], 'integer'],
             [['amount'], 'number'],
@@ -53,6 +53,9 @@ class Receipt extends \yii\db\ActiveRecord
             [['receiptFile'], 'file', 'skipOnEmpty' => true, 'extensions' => ['jpg', 'jpeg', 'png', 'pdf']],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+
+            //ACTIVE STATUS DEFAULT
+            [['active'], 'default', 'value' => 1],
         ];
     }
 
